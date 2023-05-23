@@ -8,22 +8,14 @@ namespace Butterfly.system.objects.main.manager
         {
         }
 
-        public void Add<T>(ref IInput<T> input, Action<T> action, DeliveryType type = DeliveryType.Common)
-        {
-            if (type.HasFlag(DeliveryType.Common))
-                input = new objects.input.common.Action<T>(action);
-        }
+        public void Add<T>(ref IInput<T> input, Action<T> action)
+            => input = new ActionObject<T>(action);
 
-        public main.objects.description.IRedirect<R> Add<T, R>(ref IInput<T> input, Func<T, R> func, DeliveryType type = DeliveryType.Common)
+        public IRedirect<R> Add<T, R>(ref IInput<T> input, Func<T, R> func)
         {
-            if (type.HasFlag(DeliveryType.Common))
-            {
-                main.objects.input.common.Func<T, R> inputFunc = new main.objects.input.common.Func<T, R>(func);
-                input = inputFunc;
-                return inputFunc;
-            }
-
-            return default;
+            FuncObject<T, R> inputFunc = new FuncObject<T, R>(func);
+            input = inputFunc;
+            return inputFunc;
         }
     }
 

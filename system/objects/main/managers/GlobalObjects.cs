@@ -37,15 +37,22 @@ namespace Butterfly.system.objects.main.manager
             _DOMInformation = DOMInformation;
         }
 
-        bool IGlobalObjects.TryAdd(string key, object value) => TryAdd(key, value);
-        bool IGlobalObjects.TryGet(string key, out object value) => TryGet(key, out value);
-        bool IGlobalObjects.TryGetInput<T>(string key, out T value) => TryGet(key, out value);
-
-        public main.objects.description.IRedirect<ReceiveType, IEchoReturn<ReturnType>> AddListenEcho<ReceiveType, ReturnType>
-            (string name, DeliveryType type = DeliveryType.Common)
+        bool IGlobalObjects.TryAdd(string key, object value) => true;
+        bool IGlobalObjects.TryGet(string key, out object value)
         {
-            main.objects.global.ListenEcho<ReceiveType, ReturnType> listenEchoObject
-                = new main.objects.global.ListenEcho<ReceiveType, ReturnType>
+            value = null;
+            return true;
+        }
+        bool IGlobalObjects.TryGetInput<T>(string key, out T value)
+        {
+            value = default;
+            return true;
+        }
+
+        public IRedirect<ReceiveType, IReturn<ReturnType>> AddListenEcho<ReceiveType, ReturnType>(string name)
+        {
+            ListenEcho<ReceiveType, ReturnType> listenEchoObject
+                = new ListenEcho<ReceiveType, ReturnType>
                     (_headerInformation.Explorer, _DOMInformation.ID, _stateInformation, this);
 
             _values.Add(name, listenEchoObject);
@@ -53,9 +60,10 @@ namespace Butterfly.system.objects.main.manager
             return listenEchoObject;
         }
 
-        public main.objects.description.IRedirect<ReceiveValueType> AddSendEcho<InputValueType, ReceiveValueType>
+        public IRedirect<ReceiveValueType> AddSendEcho<InputValueType, ReceiveValueType>
             (ref IInput<InputValueType> input, string name)
         {
+            /*
             if (_values.TryGetValue(name, out object listenEchoObject))
             {
                 if (listenEchoObject is IInput<InputValueType, IEchoReturn<ReceiveValueType>> listenEchoInput)
@@ -69,74 +77,45 @@ namespace Butterfly.system.objects.main.manager
                     return sendEcho;
                 }
             }
+            */
 
             return default;
         }
 
-        public main.objects.description.IRedirect<ReceiveValueType> TryGet<InputValueType, ReceiveValueType>
-            (ref IInput<InputValueType> input, string name)
+        public RedirectType Get<GlobalObjectType, LocalObjectType, InputType, InputValueType1, InputValueType2, RedirectType>
+                    (ref InputType input, string key, LocalObjectType localObject)
+                        where LocalObjectType : InputType, RedirectType, IInputConnected<InputValueType1, InputValueType2>
+                                where GlobalObjectType : IInputConnect<InputValueType1, InputValueType2>
         {
-            return default;
+            input = localObject;
+
+            localObject.Set(Get<GlobalObjectType>(key));
+
+            return localObject;
         }
 
+        public void Get<GlobalObjectType, InputType>(string key, out InputType input)
+            where GlobalObjectType : InputType
+                => input = Get<GlobalObjectType>(key);
 
-        public RedirectType TryAdd<MessageType, ObjectType, RedirectType, InputType>(string key, out InputType input, ObjectType value)
+        public RedirectType Add<GlobalObjectType, RedirectType, InputType>(string key, out InputType input, GlobalObjectType value)
+            where GlobalObjectType : InputType, RedirectType
         {
-            input = default;
+            var globalObject = Add(key, value);
 
-            if (TryAdd(key, value))
-            {
-                if (value is RedirectType valueRedirect)
-                {
-                    if (value is InputType valueInput)
-                    {
-                        input = valueInput;
-                    }
+            input = globalObject;
 
-                    return valueRedirect;
-                }
-            }
-
-            return default;
+            return globalObject;
         }
 
-        public RedirectType TryAdd<MessageType, ObjectType, RedirectType>(string key, ObjectType value) 
+        public RedirectType Add<GlobalObjectType, RedirectType>(string key, GlobalObjectType value) 
+            where GlobalObjectType : RedirectType
+                => Add(key, value);
+
+
+
+        private GlobalObjectType Get<GlobalObjectType>(string key)
         {
-            if (TryAdd(key, value))
-            {
-                if (value is RedirectType valueRedirect)
-                {
-                    return valueRedirect;
-                }
-            }
-
-            return default;
-        }
-
-        public bool TryGet<T, InputType>(string key, out InputType input)
-        {
-            input = default;
-
-            if (TryGet(key, out T globalObject))
-            {
-                if (globalObject is InputType globalObjectInput)
-                {
-                    input = globalObjectInput;
-
-                    return true;
-                }
-                else 
-                    throw new Exception($"Объект типа {typeof(T).FullName} не реализует Input типа {typeof(InputType).FullName}.");
-            }
-            else 
-                return false;
-        }
-
-
-        private bool TryGet<T>(string key, out T value)
-        {
-            value = default;
-
             if (_stateInformation.IsContruction)
             {
                 if (_values.TryGetValue(key, out object globalObject))
@@ -145,14 +124,12 @@ namespace Butterfly.system.objects.main.manager
                     {
                         if (_DOMInformation.IsParentID(globalObjectInformation.GetID()))
                         {
-                            if (globalObject is T globalObjectType)
+                            if (globalObject is GlobalObjectType globalObjectType)
                             {
-                                value = globalObjectType;
-
-                                return true;
+                                return globalObjectType;
                             }
                             else
-                                throw new Exception($"Вы пытаетесь получить глобальный обьект типа {typeof(T).FullName} по ключу {key}" +
+                                throw new Exception($"Вы пытаетесь получить глобальный обьект типа {typeof(GlobalObjectType).FullName} по ключу {key}" +
                                     $", но под данным ключом находится обьект типа {globalObject.GetType().FullName}.");
                         }
                         else
@@ -168,10 +145,10 @@ namespace Butterfly.system.objects.main.manager
             else
                 Exception($"Вы можете установить ссылку на глобальный слушатель сообщений {key} только в методе Contruction().");
 
-            return false;
+            return default;
         }
 
-        private bool TryAdd<T>(string key, T value)
+        private GlobalObjectType Add<GlobalObjectType>(string key, GlobalObjectType value)
         {
             if (_stateInformation.IsContruction)
             {
@@ -191,13 +168,13 @@ namespace Butterfly.system.objects.main.manager
 
                     Hellper.ExpendArray(_creatingObjectKey, key);
 
-                    return true;
+                    return value;
                 }
             }
             else
                 Exception($"Вы можете установить ссылку на глобальный слушатель сообщений {key} только в методе Contruction().");
 
-            return false;
+            return default;
         }
     }
 }

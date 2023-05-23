@@ -15,7 +15,7 @@
                 .output_to((message) => { Console(message); });
 
             listen_echo<int>("Echo")
-                .output_to((number, reseive) => { reseive.To(11); });
+                .output_to((number, reseive) => { Console("KDJFDKJF"); reseive.To(11); });
 
 
             //input_to(ref _input, Run);
@@ -37,18 +37,21 @@
 
     public class III : Controller
     {
-        IInput<int> _input;
+        IInput<int> _input, _input1;
 
         void Construction()
         {
-            send_message<int>(out _input, "Message");
+            send_echo1<int>(ref _input, "Echo")
+                .output_to((number) => Console("ECHO"));
+
+            send_message<int>(ref _input1, "Message");
         }
 
         void Start()
         {
-            Console("INPUT");
             _input.To(11);
             _input.To(11);
+            _input1.To(22);
         }
 
         public void Set(int i) { }

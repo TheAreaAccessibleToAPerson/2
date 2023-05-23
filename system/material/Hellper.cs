@@ -77,6 +77,41 @@
             return result;
         }
 
+        public static ValueType[] ExpendArray<ValueType>(ref ValueType[] pArray1, ValueType pValue)
+        {
+            ValueType[] result = new ValueType[pArray1.Length + 1];
+
+            pArray1.CopyTo(result, 0);
+            result[pArray1.Length] = pValue;
+
+            pArray1 = result;
+
+            return result;
+        }
+
+        public static ObjectType ExpendAction_1Array<ValueType, ObjectType>(ref Action<ValueType>[] pArray, ObjectType obj)
+            where ObjectType : IInput<ValueType>
+        {
+            Action<ValueType>[] result = new Action<ValueType>[pArray.Length + 1];
+
+            pArray.CopyTo(result, 0);
+            result[pArray.Length] = obj.To;
+
+            pArray = result;
+
+            return obj;
+        }
+
+        public static void ExpendAction_1Array<ValueType>(ref Action<ValueType>[] pArray, Action<ValueType> action)
+        {
+            Action<ValueType>[] result = new Action<ValueType>[pArray.Length + 1];
+
+            pArray.CopyTo(result, 0);
+            result[pArray.Length] = action;
+
+            pArray = result;
+        }
+
         public static ValueType[][] ExpendRange<ValueType>(ValueType[][] pArray, int pArrayLength)
         {
             ValueType[][] result = new ValueType[pArray.Length + 1][];

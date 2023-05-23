@@ -1,6 +1,6 @@
-namespace Butterfly.system.objects.main.objects.global
+namespace Butterfly.system.objects.main
 {
-    public sealed class ListenMessage<ListenValueType> : IInput<ListenValueType>, main.objects.description.IRedirect<ListenValueType>,
+    public sealed class ListenMessage<ListenValueType> : IInput<ListenValueType>, IRedirect<ListenValueType>,
         IInformation
     {
         private System.Action<ListenValueType>[] _actions = new System.Action<ListenValueType>[0];
@@ -17,21 +17,20 @@ namespace Butterfly.system.objects.main.objects.global
             _id = id;
         }
 
-        main.objects.description.IRedirect<ListenValueType> main.objects.description.IRedirect<ListenValueType>.output_to
+        IRedirect<ListenValueType> IRedirect<ListenValueType>.output_to
             (System.Action<ListenValueType> action)
         {
-            _actions = Hellper.ExpendArray(_actions, action);
+            Hellper.ExpendArray(ref _actions, action);
 
             return this;
         }
 
-        main.objects.description.IRedirect<OutputValueType> main.objects.description.IRedirect<ListenValueType>.output_to<OutputValueType>
+        IRedirect<OutputValueType> IRedirect<ListenValueType>.output_to<OutputValueType>
             (Func<ListenValueType, OutputValueType> func)
         {
-            objects.input.common.Func<ListenValueType, OutputValueType> funcObject =
-                new objects.input.common.Func<ListenValueType, OutputValueType>(func);
+            FuncObject<ListenValueType, OutputValueType> funcObject = new FuncObject<ListenValueType, OutputValueType>(func);
 
-            _actions = Hellper.ExpendArray(_actions,new objects.input.common.Func<ListenValueType, OutputValueType>(func).To);
+            Hellper.ExpendArray(ref _actions, new FuncObject<ListenValueType, OutputValueType>(func).To);
 
             return funcObject;
         }
