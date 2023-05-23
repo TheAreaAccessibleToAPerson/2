@@ -1,3 +1,4 @@
+using System.Security.AccessControl;
 namespace Butterfly.system.objects.main
 {
     /// <summary>
@@ -94,20 +95,22 @@ namespace Butterfly.system.objects.main
 
         private manager.GlobalObjects _globalObjectsManager;
 
-        protected objects.description.IRedirect<T, main.objects.global.description.IEchoReturn<T>> listen_echo<T>(string name) 
+        protected objects.description.IRedirect<T, IEchoReturn<T>> listen_echo<T>(string name) 
             => _globalObjectsManager.AddListenEcho<T, T>(name);
-        protected objects.description.IRedirect<T, main.objects.global.description.IEchoReturn<R>> listen_echo<T, R>(string name) 
+        protected objects.description.IRedirect<T, IEchoReturn<R>> listen_echo<T, R>(string name) 
             => _globalObjectsManager.AddListenEcho<T, R>(name);
 
         protected objects.description.IRedirect<T> send_echo<T>(ref IInput<T> input, string name)
             => _globalObjectsManager.AddSendEcho<T, T>(ref input,  name);
-
         protected objects.description.IRedirect<R> send_echo<T, R>(ref IInput<T> input, string name)
-            => _globalObjectsManager.AddSendEcho<T, R>(ref input,  name);
+            => _globalObjectsManager.AddSendEcho<T, R>(ref input, name);
 
-        protected void send_message<T>(ref IInput<T> input, string name) => _globalObjectsManager.AddSendMessage<T>(ref input, name);
+        protected void send_message<T>(out IInput<T> input, string name) 
+            => _globalObjectsManager.TryGet<main.objects.global.ListenMessage<T>, IInput<T>>(name, out input);
 
-        protected objects.description.IRedirect<T> listen_message<T>(string name) => _globalObjectsManager.AddListenMessage<T>(name);
+        protected objects.description.IRedirect<T> listen_message<T>(string name) 
+            => _globalObjectsManager.TryAdd<T, main.objects.global.ListenMessage<T>, objects.description.IRedirect<T>>
+                (name, new main.objects.global.ListenMessage<T>(HeaderInformation.Explorer, _DOMInformation.ID));
 
         #endregion
 

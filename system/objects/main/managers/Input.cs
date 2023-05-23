@@ -18,7 +18,7 @@ namespace Butterfly.system.objects.main.manager
         {
             if (type.HasFlag(DeliveryType.Common))
             {
-                objects.input.common.Func<T, R> inputFunc = new objects.input.common.Func<T, R>(func);
+                main.objects.input.common.Func<T, R> inputFunc = new main.objects.input.common.Func<T, R>(func);
                 input = inputFunc;
                 return inputFunc;
             }

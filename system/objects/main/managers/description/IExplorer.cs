@@ -1,6 +1,6 @@
 namespace Butterfly.system.objects.main
 {
-    public interface IInfomation
+    public interface IInformation
     {
         /// <summary>
         /// Хранит адрес обьекта в системе.

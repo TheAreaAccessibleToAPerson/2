@@ -1,8 +1,26 @@
 namespace Butterfly.system.objects.main.manager
 {
-    public sealed class GlobalObjects : Informing
+    /// <summary>
+    /// Описывает методы для работы с глобальными обьектами с проверкой на соответсвие:
+    /// 1) Создания/получений в определеный момент жизненого цикла.
+    /// 2) При создании отсутвия схожего обьекта по ключу.
+    /// 3)  
+    /// </summary>
+    public interface IGlobalObjects
+    {
+        public bool TryGet(string key, out object value);
+        public bool TryGetInput<T>(string key, out T value);
+        public bool TryAdd(string key, object value);
+    }
+
+    public sealed class GlobalObjects : Informing, IGlobalObjects
     {
         private readonly Dictionary<string, object> _values;
+
+        /// <summary>
+        /// Ключи обьектов созданых в текущем обьекте. 
+        /// </summary>
+        private string[] _creatingObjectKey = new string[0];
 
         private readonly information.Header _headerInformation;
         private readonly information.State _stateInformation;
@@ -19,11 +37,16 @@ namespace Butterfly.system.objects.main.manager
             _DOMInformation = DOMInformation;
         }
 
-        public main.objects.description.IRedirect<ReceiveType, main.objects.global.description.IEchoReturn<ReturnType>> AddListenEcho<ReceiveType, ReturnType>
+        bool IGlobalObjects.TryAdd(string key, object value) => TryAdd(key, value);
+        bool IGlobalObjects.TryGet(string key, out object value) => TryGet(key, out value);
+        bool IGlobalObjects.TryGetInput<T>(string key, out T value) => TryGet(key, out value);
+
+        public main.objects.description.IRedirect<ReceiveType, IEchoReturn<ReturnType>> AddListenEcho<ReceiveType, ReturnType>
             (string name, DeliveryType type = DeliveryType.Common)
         {
-            main.objects.global.ListenEcho<ReceiveType, ReturnType> listenEchoObject 
-                = new main.objects.global.ListenEcho<ReceiveType, ReturnType>(_headerInformation.Explorer, _DOMInformation.ID);
+            main.objects.global.ListenEcho<ReceiveType, ReturnType> listenEchoObject
+                = new main.objects.global.ListenEcho<ReceiveType, ReturnType>
+                    (_headerInformation.Explorer, _DOMInformation.ID, _stateInformation, this);
 
             _values.Add(name, listenEchoObject);
 
@@ -31,14 +54,15 @@ namespace Butterfly.system.objects.main.manager
         }
 
         public main.objects.description.IRedirect<ReceiveValueType> AddSendEcho<InputValueType, ReceiveValueType>
-            (ref IInput<InputValueType> input, string name, DeliveryType type = DeliveryType.Common)
+            (ref IInput<InputValueType> input, string name)
         {
             if (_values.TryGetValue(name, out object listenEchoObject))
             {
-                if (listenEchoObject is IInput<InputValueType, main.objects.global.description.IEchoReturn<ReceiveValueType>> listenEchoInput)
+                if (listenEchoObject is IInput<InputValueType, IEchoReturn<ReceiveValueType>> listenEchoInput)
                 {
-                    main.objects.global.SendEcho<InputValueType, ReceiveValueType> sendEcho 
-                        = new main.objects.global.SendEcho<InputValueType, ReceiveValueType>(listenEchoInput, _DOMInformation.ID);
+                    main.objects.global.SendEcho<InputValueType, ReceiveValueType> sendEcho
+                        = new main.objects.global.SendEcho<InputValueType, ReceiveValueType>
+                            (listenEchoInput, _DOMInformation.ID, _stateInformation, this);
 
                     input = sendEcho;
 
@@ -49,61 +73,131 @@ namespace Butterfly.system.objects.main.manager
             return default;
         }
 
-        public void AddSendMessage<MessageType>(ref IInput<MessageType> input, string name, DeliveryType type = DeliveryType.Common)
+        public main.objects.description.IRedirect<ReceiveValueType> TryGet<InputValueType, ReceiveValueType>
+            (ref IInput<InputValueType> input, string name)
         {
-            if (_stateInformation.IsContruction)
-            {
-                if (_values.TryGetValue(name, out object listenMessageObject))
-                {
-                    if (listenMessageObject is main.objects.global.ListenMessage<MessageType> listenMessage)
-                    {
-                        if (listenMessage is IInput<MessageType> listenMessageInput)
-                        {
-                            input = listenMessageInput;
-                        }
-                        else 
-                            Exception($"Вы пытаетесь установить связь с глобаным обьектом {name}, но произошло несовпадение типов передоваемых" +
-                                $" и прослушиваемых данных, вы пытаетесь передать тип {typeof(MessageType).FullName}");
-                    }
-                    else 
-                        if (listenMessageObject is IInfomation globalObjectExplorer)
-                            Exception($"Вы пытаетесь получить по имени {name} глобальный обьект который не является " +
-                                $"слушателем. По данному имени определен глольный обьект созданый в {globalObjectExplorer.GetExplorer()}.");
-                }
-                else 
-                    Exception($"Глобального слушателя сообщений с именем {name} не сущесвует.");
-            }
-            else
-                Exception($"Вы можете установить ссылку на глобальный слушатель сообщений {name} только в методе Contruction().");
+            return default;
         }
 
-        public main.objects.description.IRedirect<MessageType> AddListenMessage<MessageType>(string name, DeliveryType type = DeliveryType.Common)
-        {
-            if (_stateInformation.IsContruction)
-            {
-                if (_values.TryGetValue(name, out object globalObject))
-                {
-                    if (globalObject is IInfomation globalObjectExplorer)
-                        Exception($"Вы уже создали глобальный обьект с именем {name} в {globalObjectExplorer.GetExplorer()}.");
-                }
-                else
-                {
-                    if (type.HasFlag(DeliveryType.Common))
-                    {
-                        main.objects.global.ListenMessage<MessageType> listenMessageObject
-                            = new main.objects.global.ListenMessage<MessageType>(_headerInformation.Explorer, _DOMInformation.ID);
 
-                        _values.Add(name, listenMessageObject);
-                        return listenMessageObject;
+        public RedirectType TryAdd<MessageType, ObjectType, RedirectType, InputType>(string key, out InputType input, ObjectType value)
+        {
+            input = default;
+
+            if (TryAdd(key, value))
+            {
+                if (value is RedirectType valueRedirect)
+                {
+                    if (value is InputType valueInput)
+                    {
+                        input = valueInput;
                     }
+
+                    return valueRedirect;
                 }
             }
-            else 
-                Exception($"Вы можете добавить глобальную прослушку сообщений c именем {name} только в методе Contruction().");
 
             return default;
         }
 
-    }
+        public RedirectType TryAdd<MessageType, ObjectType, RedirectType>(string key, ObjectType value) 
+        {
+            if (TryAdd(key, value))
+            {
+                if (value is RedirectType valueRedirect)
+                {
+                    return valueRedirect;
+                }
+            }
 
+            return default;
+        }
+
+        public bool TryGet<T, InputType>(string key, out InputType input)
+        {
+            input = default;
+
+            if (TryGet(key, out T globalObject))
+            {
+                if (globalObject is InputType globalObjectInput)
+                {
+                    input = globalObjectInput;
+
+                    return true;
+                }
+                else 
+                    throw new Exception($"Объект типа {typeof(T).FullName} не реализует Input типа {typeof(InputType).FullName}.");
+            }
+            else 
+                return false;
+        }
+
+
+        private bool TryGet<T>(string key, out T value)
+        {
+            value = default;
+
+            if (_stateInformation.IsContruction)
+            {
+                if (_values.TryGetValue(key, out object globalObject))
+                {
+                    if (globalObject is IInformation globalObjectInformation)
+                    {
+                        if (_DOMInformation.IsParentID(globalObjectInformation.GetID()))
+                        {
+                            if (globalObject is T globalObjectType)
+                            {
+                                value = globalObjectType;
+
+                                return true;
+                            }
+                            else
+                                throw new Exception($"Вы пытаетесь получить глобальный обьект типа {typeof(T).FullName} по ключу {key}" +
+                                    $", но под данным ключом находится обьект типа {globalObject.GetType().FullName}.");
+                        }
+                        else
+                            Exception($"Глобальный обьект с именем {key} не определен не у одного из ваших родителей. " +
+                                $"Обьект с таким именем находится в {globalObjectInformation.GetExplorer()}");
+                    }
+                    else
+                        throw new Exception($"Обьект {globalObject.GetType().FullName} не реализует интерфейс {typeof(IInformation).FullName}.");
+                }
+                else
+                    Exception($"Вы пытаетесь получить несущесвующий глобальный обьект по ключу");
+            }
+            else
+                Exception($"Вы можете установить ссылку на глобальный слушатель сообщений {key} только в методе Contruction().");
+
+            return false;
+        }
+
+        private bool TryAdd<T>(string key, T value)
+        {
+            if (_stateInformation.IsContruction)
+            {
+                if (_values.TryGetValue(key, out object globalObject))
+                {
+                    if (globalObject is IInformation globalObjectExplorer)
+                    {
+                        Exception($"Вы уже создали глобальный обьект с именем {key} c типом " +
+                            $"{globalObject.GetType().FullName} в {globalObjectExplorer.GetExplorer()}.");
+                    }
+                    else 
+                        throw new Exception($"Обьект типа {globalObject.GetType().FullName} не реализует интерфейс {typeof(IInformation).FullName}");
+                }
+                else
+                {
+                    _values.Add(key, value);
+
+                    Hellper.ExpendArray(_creatingObjectKey, key);
+
+                    return true;
+                }
+            }
+            else
+                Exception($"Вы можете установить ссылку на глобальный слушатель сообщений {key} только в методе Contruction().");
+
+            return false;
+        }
+    }
 }

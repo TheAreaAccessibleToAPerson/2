@@ -57,7 +57,7 @@ namespace Butterfly.system.objects.main.manager
                             {
                                 action.Invoke();
 
-                                Task.Delay(timeDelay);
+                                global::System.Threading.Thread.Sleep(timeDelay);
                             }
                             else
                             {

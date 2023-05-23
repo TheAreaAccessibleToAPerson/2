@@ -11,11 +11,12 @@
 
         void Construction()
         {
+            listen_message<int>("Message")
+                .output_to((message) => { Console(message); });
+
             listen_echo<int>("Echo")
                 .output_to((number, reseive) => { reseive.To(11); });
 
-            listen_message<int>("Message")
-                .output_to((message) => { Console(message); });
 
             //input_to(ref _input, Run);
 
@@ -40,12 +41,13 @@
 
         void Construction()
         {
-            send_echo<int>(ref _input, "Echo")
-                .output_to((number) => { Console("NUMBER"); });
+            send_message<int>(out _input, "Message");
         }
 
         void Start()
         {
+            Console("INPUT");
+            _input.To(11);
             _input.To(11);
         }
 

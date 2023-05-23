@@ -1,8 +1,9 @@
 namespace Butterfly.system.objects.main.objects.description
 {
-    public interface IRedirect<ValueType>
+    public interface IRedirect<InputValueType>
     {
-        public void output_to(System.Action<ValueType> action);
+        public IRedirect<InputValueType> output_to(System.Action<InputValueType> action);
+        public IRedirect<OutputValueType> output_to<OutputValueType>(System.Func<InputValueType, OutputValueType> func);
     }
 
     public interface IRedirect<ValueType1, ValueType2>

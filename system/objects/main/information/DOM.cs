@@ -61,6 +61,17 @@ namespace Butterfly.system.objects.main.information
         public readonly root.IManager RootManager;
 
         /// <summary>
+        /// Принадлежит ли переданый ID родительскому обьекту. 
+        /// </summary>
+        /// <returns></returns>
+        public bool IsParentID(ulong id)
+        {
+            foreach(ulong i in ParentObjectsID) 
+                if (id == i) return true;
+            return false;
+        }
+
+        /// <summary>
         /// Инициализируем все необходимые данные DOM для ветки. 
         /// </summary>
         /// <param name="keyObject">Ключ обьекта по которому он был создан в родители.</param>
