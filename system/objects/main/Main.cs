@@ -97,17 +97,13 @@ namespace Butterfly.system.objects.main
 
         protected IRedirect<T, IReturn<T>> listen_echo<T>(string name) => _globalObjectsManager.AddListenEcho<T, T>(name);
         protected IRedirect<T, IReturn<R>> listen_echo<T, R>(string name) => _globalObjectsManager.AddListenEcho<T, R>(name);
-        protected IRedirect<T> send_echo<T>(ref IInput<T> input, string name) => _globalObjectsManager.AddSendEcho<T, T>(ref input,  name);
 
-        protected IRedirect<T> send_echo1<T>(ref IInput<T> input, string name) 
-            => _globalObjectsManager.Get<ListenEcho<T, T>, SendEcho<T, T>, IInput<T>, T, IReturn<T>, IRedirect<T>> 
+        protected IRedirect<T> send_echo<T>(ref IInput<T> input, string name) 
+            => _globalObjectsManager.Get<ListenEcho<T, T>, SendEcho<T, T>, T, IReturn<T>, IRedirect<T>> 
                 (ref input, name, new SendEcho<T, T>(_DOMInformation.ID, _globalObjectsManager));
 
-        protected IRedirect<R> send_echo<T, R>(ref IInput<T> input, string name) 
-            => _globalObjectsManager.AddSendEcho<T, R>(ref input, name);
-
         protected void send_message<T>(ref IInput<T> input, string name) 
-            => _globalObjectsManager.Get<ListenMessage<T>, IInput<T>> (name, out input);
+            => _globalObjectsManager.Get<ListenMessage<T>, T> (name, ref input);
 
         protected IRedirect<T> listen_message<T>(string name) 
             => _globalObjectsManager.Add<ListenMessage<T>, IRedirect<T>> (name, new ListenMessage<T>(HeaderInformation.Explorer, _DOMInformation.ID));

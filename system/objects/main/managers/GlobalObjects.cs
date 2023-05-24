@@ -60,32 +60,10 @@ namespace Butterfly.system.objects.main.manager
             return listenEchoObject;
         }
 
-        public IRedirect<ReceiveValueType> AddSendEcho<InputValueType, ReceiveValueType>
-            (ref IInput<InputValueType> input, string name)
-        {
-            /*
-            if (_values.TryGetValue(name, out object listenEchoObject))
-            {
-                if (listenEchoObject is IInput<InputValueType, IEchoReturn<ReceiveValueType>> listenEchoInput)
-                {
-                    main.objects.global.SendEcho<InputValueType, ReceiveValueType> sendEcho
-                        = new main.objects.global.SendEcho<InputValueType, ReceiveValueType>
-                            (listenEchoInput, _DOMInformation.ID, _stateInformation, this);
-
-                    input = sendEcho;
-
-                    return sendEcho;
-                }
-            }
-            */
-
-            return default;
-        }
-
-        public RedirectType Get<GlobalObjectType, LocalObjectType, InputType, InputValueType1, InputValueType2, RedirectType>
-                    (ref InputType input, string key, LocalObjectType localObject)
-                        where LocalObjectType : InputType, RedirectType, IInputConnected<InputValueType1, InputValueType2>
-                                where GlobalObjectType : IInputConnect<InputValueType1, InputValueType2>
+        public RedirectType Get<GlobalObjectType, LocalObjectType, InputValueType1, InputValueType2, RedirectType>
+                    (ref IInput<InputValueType1> input, string key, LocalObjectType localObject)
+                        where LocalObjectType : IInput<InputValueType1>, RedirectType, IInputConnected<InputValueType1, InputValueType2>
+                                where GlobalObjectType : IInputConnect<InputValueType1, InputValueType2>, IInformation
         {
             input = localObject;
 
@@ -94,8 +72,20 @@ namespace Butterfly.system.objects.main.manager
             return localObject;
         }
 
-        public void Get<GlobalObjectType, InputType>(string key, out InputType input)
-            where GlobalObjectType : InputType
+        public RedirectType Get<GlobalObjectType, LocalObjectType, InputType, InputValueType1, InputValueType2, RedirectType>
+                    (ref InputType input, string key, LocalObjectType localObject)
+                        where LocalObjectType : InputType, RedirectType, IInputConnected<InputValueType1, InputValueType2>
+                                where GlobalObjectType : IInputConnect<InputValueType1, InputValueType2>, IInformation
+        {
+            input = localObject;
+
+            localObject.Set(Get<GlobalObjectType>(key));
+
+            return localObject;
+        }
+
+        public void Get<GlobalObjectType, InputValueType>(string key, ref IInput<InputValueType> input)
+            where GlobalObjectType : IInput<InputValueType>, IInformation
                 => input = Get<GlobalObjectType>(key);
 
         public RedirectType Add<GlobalObjectType, RedirectType, InputType>(string key, out InputType input, GlobalObjectType value)
@@ -108,39 +98,32 @@ namespace Butterfly.system.objects.main.manager
             return globalObject;
         }
 
-        public RedirectType Add<GlobalObjectType, RedirectType>(string key, GlobalObjectType value) 
+        public RedirectType Add<GlobalObjectType, RedirectType>(string key, GlobalObjectType value)
             where GlobalObjectType : RedirectType
                 => Add(key, value);
 
-
-
-        private GlobalObjectType Get<GlobalObjectType>(string key)
+        private GlobalObjectType Get<GlobalObjectType>(string key) where GlobalObjectType : IInformation
         {
             if (_stateInformation.IsContruction)
             {
                 if (_values.TryGetValue(key, out object globalObject))
                 {
-                    if (globalObject is IInformation globalObjectInformation)
+                    if (globalObject is GlobalObjectType globalObjectReduse)
                     {
-                        if (_DOMInformation.IsParentID(globalObjectInformation.GetID()))
+                        if (_DOMInformation.IsParentID(globalObjectReduse.GetID()))
                         {
-                            if (globalObject is GlobalObjectType globalObjectType)
-                            {
-                                return globalObjectType;
-                            }
-                            else
-                                throw new Exception($"Вы пытаетесь получить глобальный обьект типа {typeof(GlobalObjectType).FullName} по ключу {key}" +
-                                    $", но под данным ключом находится обьект типа {globalObject.GetType().FullName}.");
+                            return globalObjectReduse;
                         }
                         else
                             Exception($"Глобальный обьект с именем {key} не определен не у одного из ваших родителей. " +
-                                $"Обьект с таким именем находится в {globalObjectInformation.GetExplorer()}");
+                                $"Обьект с таким именем находится в {globalObjectReduse.GetExplorer()}");
                     }
                     else
-                        throw new Exception($"Обьект {globalObject.GetType().FullName} не реализует интерфейс {typeof(IInformation).FullName}.");
+                        throw new Exception($"Вы пытаетесь получить глобальный обьект типа {typeof(GlobalObjectType).FullName} по ключу {key}" +
+                            $", но под данным ключом находится обьект типа {globalObject.GetType().FullName}.");
                 }
                 else
-                    Exception($"Вы пытаетесь получить несущесвующий глобальный обьект по ключу");
+                    Exception($"Вы пытаетесь получить несущесвующий глобальный обьект по ключу {key}");
             }
             else
                 Exception($"Вы можете установить ссылку на глобальный слушатель сообщений {key} только в методе Contruction().");
@@ -159,14 +142,14 @@ namespace Butterfly.system.objects.main.manager
                         Exception($"Вы уже создали глобальный обьект с именем {key} c типом " +
                             $"{globalObject.GetType().FullName} в {globalObjectExplorer.GetExplorer()}.");
                     }
-                    else 
+                    else
                         throw new Exception($"Обьект типа {globalObject.GetType().FullName} не реализует интерфейс {typeof(IInformation).FullName}");
                 }
                 else
                 {
                     _values.Add(key, value);
 
-                    Hellper.ExpendArray(_creatingObjectKey, key);
+                    Hellper.ExpendArray(ref _creatingObjectKey, key);
 
                     return value;
                 }

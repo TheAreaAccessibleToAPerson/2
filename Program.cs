@@ -37,24 +37,43 @@
 
     public class III : Controller
     {
-        IInput<int> _input, _input1;
+        IInput<int> _input, _input1, _input2;
 
         void Construction()
         {
-            send_echo1<int>(ref _input, "Echo")
+            send_echo<int>(ref _input, "Echo")
                 .output_to((number) => Console("ECHO"));
 
             send_message<int>(ref _input1, "Message");
+
+            input_to(ref _input2, obj<Test>("TEST1").Func)
+                .output_to(obj<Test>("TEST2").Action);
         }
 
         void Start()
         {
             _input.To(11);
             _input.To(11);
+
             _input1.To(22);
+
+            _input2.To(0);
+        }
+    }
+
+    public class Test : Controller
+    {
+        public int Func(int i)
+        {
+            Console("FUNC:" + i);
+
+            return i + 1;
         }
 
-        public void Set(int i) { }
+        public void Action(int i)
+        {
+            Console("ACTION" + i);
+        }
     }
 }
 

@@ -18,6 +18,8 @@ namespace Butterfly.system.objects.main
         private readonly manager.IGlobalObjects _globalObjectsManager;
         private readonly information.State _stateInformation;
 
+        public IInput<ReturnValueType, IReturn<ReturnValueType>>[] _return = new IInput<ReturnValueType, IReturn<ReturnValueType>>[0];
+
         private System.Action<InputValueType, IReturn<ReturnValueType>> _action;
 
         void IInput<InputValueType, IReturn<ReturnValueType>>.To
@@ -41,6 +43,7 @@ namespace Butterfly.system.objects.main
 
         void IRedirect<InputValueType, IReturn<ReturnValueType>>.output_to
             (System.Action<InputValueType, IReturn<ReturnValueType>> action) => _action = action;
+
     }
 
     public sealed class SendEcho<InputValueType, ReturnValueType> : IInput<InputValueType>,

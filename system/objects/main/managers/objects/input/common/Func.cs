@@ -4,6 +4,8 @@ namespace Butterfly.system.objects.main
     {
         private readonly System.Func<InputValueType, ReturnValueType> _func;
 
+        public IInput<ReturnValueType>[] _return = new IInput<ReturnValueType>[0];
+
         public System.Action<ReturnValueType>[] _returnAction = new System.Action<ReturnValueType>[0];
 
         public FuncObject(System.Func<InputValueType, ReturnValueType> func) => _func = func;
