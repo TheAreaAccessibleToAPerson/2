@@ -38,6 +38,7 @@
     public class III : Controller
     {
         IInput<int> _input, _input1, _input2;
+        IInput<int, int, int, int> _input3;
 
         void Construction()
         {
@@ -46,7 +47,7 @@
 
             send_message<int>(ref _input1, "Message");
 
-            input_to(ref _input2, obj<Test>("TEST1").Func)
+            input_to(ref _input3, obj<Test>("TEST1").Func)
                 .output_to(obj<Test>("TEST2").Action);
         }
 
@@ -57,7 +58,7 @@
 
             _input1.To(22);
 
-            _input2.To(0);
+            _input3.To(0, 0, 0, 0);
         }
     }
 

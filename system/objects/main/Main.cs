@@ -76,7 +76,7 @@ namespace Butterfly.system.objects.main
             {
                 _globalObjectsManager = new manager.GlobalObjects(this, globalObjects, HeaderInformation, StateInformation, _DOMInformation);
 
-                _inputManager = new manager.Input(this);
+                _inputManager = new manager.Input(this, HeaderInformation.Explorer, _DOMInformation.ID, StateInformation, _globalObjectsManager);
 
                 _branchObjectsManager = new manager.BranchObjects(this, HeaderInformation, StateInformation, _DOMInformation, globalObjects);
                 _nodeObjectsManager = new manager.NodeObjects(this, HeaderInformation, StateInformation, _DOMInformation, globalObjects);
@@ -126,7 +126,11 @@ namespace Butterfly.system.objects.main
 
         protected void input_to<T>(ref IInput<T> input, Action<T> action) => _inputManager.Add<T>(ref input, action);
 
-        protected IRedirect<R> input_to<T, R>(ref IInput<T> input, Func<T, R> func) => _inputManager.Add(ref input, func);
+        protected void input_to<T1, T2, T3, T4>(ref IInput<T1, T2, T3, T4> input, Action<T1, T2, T3, T4> action) 
+            => _inputManager.Add<T1, T2, T3, T4>(ref input, action);
+
+        protected IRedirect<R> input_to<T1, T2, T3, T4, R>(ref IInput<T1, T2, T3, T4> input, Func<T1, T2, T3, T4, R> func) 
+            => _inputManager.Add(ref input, func);
 
         #endregion
 
