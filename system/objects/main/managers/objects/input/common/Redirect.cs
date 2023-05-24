@@ -1,10 +1,14 @@
 namespace Butterfly.system.objects.main
 {
-    public abstract class Redirect<R> : IRedirect<R>
+    public abstract class Redirect<T> : IRedirect<T>
     {
-        protected System.Action<R>[] _returnAction = new System.Action<R>[0];
+        public Redirect(manager.GlobalObjects globalObjectsManager)
+        {
+        }
 
-        IRedirect<R> IRedirect<R>.output_to(Action<R> action)
+        protected Action<T>[] _returnAction = new Action<T>[0];
+
+        public IRedirect<T> output_to(Action<T> action)
         {
             Array.Resize(ref _returnAction, _returnAction.Length + 1);
             _returnAction[_returnAction.Length] = action;
@@ -12,14 +16,25 @@ namespace Butterfly.system.objects.main
             return this;
         }
 
-        IRedirect<O> IRedirect<R>.output_to<O>(Func<R, O> func)
+        public IRedirect<OutputValueType> output_to<OutputValueType>(Func<T, OutputValueType> func)
         {
-            FuncObject<R, O> funcObject = new FuncObject<R, O>(func);
+            FuncObject<T, OutputValueType> funcObject = new FuncObject<T, OutputValueType>(func);
 
             Array.Resize(ref _returnAction, _returnAction.Length + 1);
             _returnAction[_returnAction.Length] = funcObject.To;
 
             return funcObject;
+        }
+    }
+
+    public abstract class Redirect<T1, T2> : IRedirect<T1, T2>
+    {
+        protected Action<T1, T2> _returnAction;
+
+        public void output_to(Action<T1, T2> action) => _returnAction = action;
+
+        public void output_to<OutputValueType>(Func<T1, T2, OutputValueType> action)
+        {
         }
     }
 }

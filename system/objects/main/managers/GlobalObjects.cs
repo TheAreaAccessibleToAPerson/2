@@ -8,9 +8,24 @@ namespace Butterfly.system.objects.main.manager
     /// </summary>
     public interface IGlobalObjects
     {
-        public bool TryGet(string key, out object value);
-        public bool TryGetInput<T>(string key, out T value);
-        public bool TryAdd(string key, object value);
+        /// <summary>
+        /// Получает глобальный обьект у обьекта к которому приходится потомком.
+        /// После чего с помощью описаного способа в IInputConnet получаем ссылку на 
+        /// принятие входных данных и передаем ее локальному обьекту с помощью
+        /// описаного способа в IInputConnected. 
+        /// </summary>
+        /// <param name="input">Способ передачи данных в локальный обьект.</param>
+        /// <param name="key">Ключ по которому хранится глобальный обьект.</param>
+        /// <param name="localObject">Локальный обьект через который мы будем общатся с глобальным обьектом.</param>
+        /// <typeparam name="GlobalObjectType">Тип глобального обьекта.</typeparam>
+        /// <typeparam name="LocalObjectType">Тип локального обьекта.</typeparam>
+        /// <typeparam name="InputType">Тип с помощью которого мы будет передавать данные в локальный обьект.</typeparam>
+        /// <typeparam name="RedirectType">Тип который примит ответ из глобального обьекта.</typeparam>
+        /// <returns></returns>
+        public RedirectType Get<GlobalObjectType, LocalObjectType, InputType, RedirectType> 
+            (ref InputType input, string key, LocalObjectType localObject)
+                where LocalObjectType : InputType, RedirectType, IInputConnected
+                    where GlobalObjectType : IInformation, IInputConnect;
     }
 
     public sealed class GlobalObjects : Informing, IGlobalObjects
@@ -37,55 +52,25 @@ namespace Butterfly.system.objects.main.manager
             _DOMInformation = DOMInformation;
         }
 
-        bool IGlobalObjects.TryAdd(string key, object value) => true;
-        bool IGlobalObjects.TryGet(string key, out object value)
-        {
-            value = null;
-            return true;
-        }
-        bool IGlobalObjects.TryGetInput<T>(string key, out T value)
-        {
-            value = default;
-            return true;
-        }
+        public RedirectType Add<RedirectType, GlobalObjectType>
+            (string name, GlobalObjectType localObject)
+                where GlobalObjectType : RedirectType 
+            => Add(name, localObject);
 
-        public IRedirect<ReceiveType, IReturn<ReturnType>> AddListenEcho<ReceiveType, ReturnType>(string name)
-        {
-            ListenEcho<ReceiveType, ReturnType> listenEchoObject
-                = new ListenEcho<ReceiveType, ReturnType>
-                    (_headerInformation.Explorer, _DOMInformation.ID, _stateInformation, this);
-
-            _values.Add(name, listenEchoObject);
-
-            return listenEchoObject;
-        }
-
-        public RedirectType Get<GlobalObjectType, LocalObjectType, InputValueType1, InputValueType2, RedirectType>
-                    (ref IInput<InputValueType1> input, string key, LocalObjectType localObject)
-                        where LocalObjectType : IInput<InputValueType1>, RedirectType, IInputConnected<InputValueType1, InputValueType2>
-                                where GlobalObjectType : IInputConnect<InputValueType1, InputValueType2>, IInformation
+        public RedirectType Get<GlobalObjectType, LocalObjectType, InputType, RedirectType> 
+            (ref InputType input, string key, LocalObjectType localObject)
+                where LocalObjectType : InputType, RedirectType, IInputConnected
+                    where GlobalObjectType : IInformation, IInputConnect
         {
             input = localObject;
 
-            localObject.Set(Get<GlobalObjectType>(key));
+            localObject.SetConnected(Get<GlobalObjectType>(key).GetConnect());
 
             return localObject;
         }
 
-        public RedirectType Get<GlobalObjectType, LocalObjectType, InputType, InputValueType1, InputValueType2, RedirectType>
-                    (ref InputType input, string key, LocalObjectType localObject)
-                        where LocalObjectType : InputType, RedirectType, IInputConnected<InputValueType1, InputValueType2>
-                                where GlobalObjectType : IInputConnect<InputValueType1, InputValueType2>, IInformation
-        {
-            input = localObject;
-
-            localObject.Set(Get<GlobalObjectType>(key));
-
-            return localObject;
-        }
-
-        public void Get<GlobalObjectType, InputValueType>(string key, ref IInput<InputValueType> input)
-            where GlobalObjectType : IInput<InputValueType>, IInformation
+        public void Get<GlobalObjectType, InputType>(string key, ref InputType input)
+            where GlobalObjectType : InputType, IInformation
                 => input = Get<GlobalObjectType>(key);
 
         public RedirectType Add<GlobalObjectType, RedirectType, InputType>(string key, out InputType input, GlobalObjectType value)

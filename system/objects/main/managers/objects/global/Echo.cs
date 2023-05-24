@@ -11,44 +11,40 @@ namespace Butterfly
 
 namespace Butterfly.system.objects.main
 {
-    public sealed class ListenEcho<InputValueType, ReturnValueType> : IInput<InputValueType, IReturn<ReturnValueType>>,
-        IRedirect<InputValueType, IReturn<ReturnValueType>>, 
-            IInputConnect<InputValueType, IReturn<ReturnValueType>>, IInformation
+    /// <summary>
+    /// Прослушивает входящие сообщения с возможностью возрата отправителю ответа.
+    /// </summary>
+    /// <typeparam name="InputValueType">Тип входящий данных.</typeparam>
+    /// <typeparam name="ReturnValueType">Тип возращаемых данныx.</typeparam>
+    public sealed class ListenEcho<InputValueType, ReturnValueType> : Redirect<InputValueType, IReturn<ReturnValueType>>, 
+        IInput<InputValueType, IReturn<ReturnValueType>>, IInputConnect, IInformation
     {
         private readonly manager.IGlobalObjects _globalObjectsManager;
-        private readonly information.State _stateInformation;
 
         public IInput<ReturnValueType, IReturn<ReturnValueType>>[] _return = new IInput<ReturnValueType, IReturn<ReturnValueType>>[0];
 
-        private System.Action<InputValueType, IReturn<ReturnValueType>> _action;
-
         void IInput<InputValueType, IReturn<ReturnValueType>>.To
-            (InputValueType value1, IReturn<ReturnValueType> value2) => _action(value1, value2);
+            (InputValueType value1, IReturn<ReturnValueType> value2) => _returnAction(value1, value2);
 
-        IInput<InputValueType, IReturn<ReturnValueType>> IInputConnect<InputValueType, IReturn<ReturnValueType>>.Get() 
-            => this;
+
+        object IInputConnect.GetConnect() => this;
 
         private readonly string _explorer;
         private readonly ulong _id;
         string IInformation.GetExplorer() => _explorer;
         ulong IInformation.GetID() => _id;
 
-        public ListenEcho(string explorer, ulong id, information.State stateInformation, manager.IGlobalObjects globalObjectManager) 
+        public ListenEcho(string explorer, ulong id, manager.IGlobalObjects globalObjectManager) 
         {
             _explorer = explorer;
             _id = id;
-            _stateInformation = stateInformation;
             _globalObjectsManager = globalObjectManager;
         }
-
-        void IRedirect<InputValueType, IReturn<ReturnValueType>>.output_to
-            (System.Action<InputValueType, IReturn<ReturnValueType>> action) => _action = action;
 
     }
 
     public sealed class SendEcho<InputValueType, ReturnValueType> : IInput<InputValueType>,
-        IReturn<ReturnValueType>, IRedirect<ReturnValueType>,
-            IInputConnected<InputValueType, IReturn<ReturnValueType>>
+        IReturn<ReturnValueType>, IRedirect<ReturnValueType>, IInputConnected
     {
         private readonly manager.IGlobalObjects _globalObjectsManager;
 
@@ -60,8 +56,15 @@ namespace Butterfly.system.objects.main
         ulong IReturn<ReturnValueType>.GetID() => _id;
         ulong IReturn<ReturnValueType>.GetUnieueID() => _uniqueID;
 
-        void IInputConnected<InputValueType, IReturn<ReturnValueType>>.Set
-            (IInputConnect<InputValueType, IReturn<ReturnValueType>> inputConnect) => _inputAction = inputConnect.Get();
+        void IInputConnected.SetConnected(object inputConnect)
+        {
+            if (inputConnect is IInput<InputValueType, IReturn<ReturnValueType>> inputConnectReduse)
+            {
+                _inputAction = inputConnectReduse;
+            }
+            else 
+                throw new Exception($"Не удалось установить связь объекта {GetType().FullName} c обьектом {inputConnect.GetType().FullName}.");
+        }
 
         public SendEcho(ulong id, manager.IGlobalObjects globalObjectManager) 
         {

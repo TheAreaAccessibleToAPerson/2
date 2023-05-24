@@ -1,13 +1,48 @@
 namespace Butterfly.system.objects.main
 {
-    public interface IRedirect<InputValueType>
+    /// <summary>
+    /// Описывает методы для перенаправления данных в другие участки программы. 
+    /// </summary>
+    /// <typeparam name="T1"></typeparam>
+    public interface IRedirect<T1>
     {
-        public IRedirect<InputValueType> output_to(Action<InputValueType> action);
-        public IRedirect<OutputValueType> output_to<OutputValueType>(Func<InputValueType, OutputValueType> func);
+        public IRedirect<T1> output_to(Action<T1> action);
+        public IRedirect<OutputValueType> output_to<OutputValueType>(Func<T1, OutputValueType> func);
     }
 
-    public interface IRedirect<ValueType1, ValueType2>
+    /// <summary>
+    /// Описывает методы для перенаправления данных в другие участки программы. 
+    /// </summary>
+    /// <typeparam name="T1"></typeparam>
+    /// <typeparam name="T2"></typeparam>
+    public interface IRedirect<T1, T2>
     {
-        public void output_to(System.Action<ValueType1, ValueType2> action);
+        public void output_to(Action<T1, T2> action);
+        public void output_to<OutputValueType>(Func<T1, T2, OutputValueType> action);
+    }
+
+    /// <summary>
+    /// Описывает методы для перенаправления данных в другие участки программы. 
+    /// </summary>
+    /// <typeparam name="T1"></typeparam>
+    /// <typeparam name="T2"></typeparam>
+    /// <typeparam name="T3"></typeparam>
+    public interface IRedirect<T1, T2, T3>
+    {
+        public void output_to(Action<T1, T2, T3> action);
+        public void output_to<OutputValueType>(Func<T1, T2, T3, OutputValueType> action);
+    }
+
+    /// <summary>
+    /// Описывает методы для перенаправления данных в другие участки программы. 
+    /// </summary>
+    /// <typeparam name="T1"></typeparam>
+    /// <typeparam name="T2"></typeparam>
+    /// <typeparam name="T3"></typeparam>
+    /// <typeparam name="T4"></typeparam>
+    public interface IRedirect<T1, T2, T3, T4>
+    {
+        public void output_to(Action<T1, T2, T3, T4> action);
+        public void output_to<OutputValueType>(Func<T1, T2, T3, T4, OutputValueType> action);
     }
 }

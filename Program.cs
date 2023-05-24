@@ -14,7 +14,7 @@
             listen_message<int>("Message")
                 .output_to((message) => { Console(message); });
 
-            listen_echo<int>("Echo")
+            listen_echo<int, int>("Echo")
                 .output_to((number, reseive) => { Console("KDJFDKJF"); reseive.To(11); });
 
 
@@ -41,7 +41,7 @@
 
         void Construction()
         {
-            send_echo<int>(ref _input, "Echo")
+            send_echo<int, int>(ref _input, "Echo")
                 .output_to((number) => Console("ECHO"));
 
             send_message<int>(ref _input1, "Message");

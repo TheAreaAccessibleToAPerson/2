@@ -1,21 +1,13 @@
 namespace Butterfly.system.objects.main
 {
-    public interface IInputConnect<ValueType>
+    public interface IInputConnect
     {
-        public IInput<ValueType> Get();
-    }
-    public interface IInputConnect<ValueType1, ValueType2>
-    {
-        public IInput<ValueType1, ValueType2> Get();
+        public object GetConnect();
     }
 
-    public interface IInputConnected<ValueType>
-    {
-        public void Set(IInputConnect<ValueType> inputConnect);
-    }
 
-    public interface IInputConnected<ValueType1, ValueType2>
+    public interface IInputConnected
     {
-        public void Set(IInputConnect<ValueType1, ValueType2> inputConnect);
+        public void SetConnected(object inputConnect);
     }
 }

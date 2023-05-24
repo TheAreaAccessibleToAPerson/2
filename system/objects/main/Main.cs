@@ -95,18 +95,28 @@ namespace Butterfly.system.objects.main
 
         private manager.GlobalObjects _globalObjectsManager;
 
-        protected IRedirect<T, IReturn<T>> listen_echo<T>(string name) => _globalObjectsManager.AddListenEcho<T, T>(name);
-        protected IRedirect<T, IReturn<R>> listen_echo<T, R>(string name) => _globalObjectsManager.AddListenEcho<T, R>(name);
+        protected IRedirect<T, IReturn<R>> listen_echo<T, R>(string name)
+            => _globalObjectsManager.Add<IRedirect<T, IReturn<R>>, ListenEcho<T, R>>
+                (name, new ListenEcho<T, R>(HeaderInformation.Explorer, _DOMInformation.ID, _globalObjectsManager));
+
+        protected IRedirect<T, IReturn<T>> listen_echo<T>(string name) 
+            => _globalObjectsManager.Add<IRedirect<T, IReturn<T>>, ListenEcho<T, T>>
+                (name, new ListenEcho<T, T>(HeaderInformation.Explorer, _DOMInformation.ID, _globalObjectsManager));
 
         protected IRedirect<T> send_echo<T>(ref IInput<T> input, string name) 
-            => _globalObjectsManager.Get<ListenEcho<T, T>, SendEcho<T, T>, T, IReturn<T>, IRedirect<T>> 
+            => _globalObjectsManager.Get<ListenEcho<T, T>, SendEcho<T, T>, IInput<T>, IRedirect<T>> 
                 (ref input, name, new SendEcho<T, T>(_DOMInformation.ID, _globalObjectsManager));
 
+        protected IRedirect<R> send_echo<T, R>(ref IInput<T> input, string name) 
+            => _globalObjectsManager.Get<ListenEcho<T, R>, SendEcho<T, R>, IInput<T>, IRedirect<R>> 
+                (ref input, name, new SendEcho<T, R>(_DOMInformation.ID, _globalObjectsManager));
+
         protected void send_message<T>(ref IInput<T> input, string name) 
-            => _globalObjectsManager.Get<ListenMessage<T>, T> (name, ref input);
+            => _globalObjectsManager.Get<ListenMessage<T>, IInput<T>> (name, ref input);
 
         protected IRedirect<T> listen_message<T>(string name) 
-            => _globalObjectsManager.Add<ListenMessage<T>, IRedirect<T>> (name, new ListenMessage<T>(HeaderInformation.Explorer, _DOMInformation.ID));
+            => _globalObjectsManager.Add<ListenMessage<T>, IRedirect<T>> 
+                (name, new ListenMessage<T>(HeaderInformation.Explorer, _DOMInformation.ID));
 
         #endregion
 
