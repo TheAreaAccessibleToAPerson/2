@@ -57,6 +57,20 @@ namespace Butterfly.system.objects.main.manager
                 where GlobalObjectType : RedirectType 
             => Add(name, localObject);
 
+        public RedirectType Add<GlobalObjectType, RedirectType, InputType>(string key, out InputType input, GlobalObjectType value)
+            where GlobalObjectType : InputType, RedirectType
+        {
+            var globalObject = Add(key, value);
+
+            input = globalObject;
+
+            return globalObject;
+        }
+
+        public RedirectType Add<GlobalObjectType, RedirectType>(string key, GlobalObjectType value)
+            where GlobalObjectType : RedirectType
+                => Add(key, value);
+
         public RedirectType Get<GlobalObjectType, LocalObjectType, InputType, RedirectType> 
             (ref InputType input, string key, LocalObjectType localObject)
                 where LocalObjectType : InputType, RedirectType, IInputConnected
@@ -72,20 +86,6 @@ namespace Butterfly.system.objects.main.manager
         public void Get<GlobalObjectType, InputType>(string key, ref InputType input)
             where GlobalObjectType : InputType, IInformation
                 => input = Get<GlobalObjectType>(key);
-
-        public RedirectType Add<GlobalObjectType, RedirectType, InputType>(string key, out InputType input, GlobalObjectType value)
-            where GlobalObjectType : InputType, RedirectType
-        {
-            var globalObject = Add(key, value);
-
-            input = globalObject;
-
-            return globalObject;
-        }
-
-        public RedirectType Add<GlobalObjectType, RedirectType>(string key, GlobalObjectType value)
-            where GlobalObjectType : RedirectType
-                => Add(key, value);
 
         private GlobalObjectType Get<GlobalObjectType>(string key) where GlobalObjectType : IInformation
         {

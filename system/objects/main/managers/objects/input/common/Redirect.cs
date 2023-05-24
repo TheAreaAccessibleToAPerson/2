@@ -1,40 +1,58 @@
 namespace Butterfly.system.objects.main
 {
-    public abstract class Redirect<T> : IRedirect<T>
+    public abstract class Information : IInformation
     {
-        public Redirect(manager.GlobalObjects globalObjectsManager)
+        protected readonly string _explorer;
+        protected readonly ulong _id;
+
+        public Information(string explorer, ulong id)
         {
+            _explorer = explorer;
+            _id = id;
         }
 
-        protected Action<T>[] _returnAction = new Action<T>[0];
+        public string GetExplorer() => _explorer;
+        public ulong GetID() => _id;
+    }
 
-        public IRedirect<T> output_to(Action<T> action)
-        {
-            Array.Resize(ref _returnAction, _returnAction.Length + 1);
-            _returnAction[_returnAction.Length] = action;
+    public abstract class Redirect<T> : Information, IRedirect<T>
+    {
+        private readonly manager.IGlobalObjects _globalObjectsManager;
 
-            return this;
-        }
+        public Redirect(string explorer, ulong id, manager.IGlobalObjects globalObjectsManager) 
+            : base(explorer, id)
+                => _globalObjectsManager = globalObjectsManager;
+
+        protected Action<T> _returnAction;
+
+        public void output_to(Action<T> action) => _returnAction = action;
 
         public IRedirect<OutputValueType> output_to<OutputValueType>(Func<T, OutputValueType> func)
         {
-            FuncObject<T, OutputValueType> funcObject = new FuncObject<T, OutputValueType>(func);
+            FuncObject<T, OutputValueType> funcObject = new FuncObject<T, OutputValueType>
+                (func, _explorer, _id, _globalObjectsManager);
 
-            Array.Resize(ref _returnAction, _returnAction.Length + 1);
-            _returnAction[_returnAction.Length] = funcObject.To;
+            _returnAction = funcObject.To;
 
             return funcObject;
         }
     }
 
-    public abstract class Redirect<T1, T2> : IRedirect<T1, T2>
+    public abstract class Redirect<T1, T2> : Information, IRedirect<T1, T2>
     {
+        private readonly manager.IGlobalObjects _globalObjectsManager;
+
         protected Action<T1, T2> _returnAction;
+
+        public Redirect(string explorer, ulong id, manager.IGlobalObjects globalObjectsManager) 
+            : base(explorer, id)
+                => _globalObjectsManager = globalObjectsManager;
 
         public void output_to(Action<T1, T2> action) => _returnAction = action;
 
-        public void output_to<OutputValueType>(Func<T1, T2, OutputValueType> action)
+        public IRedirect<OutputValueType> output_to<OutputValueType>(Func<T1, T2, OutputValueType> action)
         {
+            return default;
         }
     }
 }

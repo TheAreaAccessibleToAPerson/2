@@ -41,7 +41,7 @@
 
         void Construction()
         {
-            send_echo<int, int>(ref _input, "Echo")
+            send_echo_1_1<int, int>(ref _input, "Echo")
                 .output_to((number) => Console("ECHO"));
 
             send_message<int>(ref _input1, "Message");
@@ -63,6 +63,11 @@
 
     public class Test : Controller
     {
+        public int Func(int i1, int i2, int i3, int i4)
+        {
+            return 1;
+        }
+
         public int Func(int i)
         {
             Console("FUNC:" + i);

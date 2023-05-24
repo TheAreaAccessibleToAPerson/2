@@ -105,18 +105,18 @@ namespace Butterfly.system.objects.main
 
         protected IRedirect<T> send_echo<T>(ref IInput<T> input, string name) 
             => _globalObjectsManager.Get<ListenEcho<T, T>, SendEcho<T, T>, IInput<T>, IRedirect<T>> 
-                (ref input, name, new SendEcho<T, T>(_DOMInformation.ID, _globalObjectsManager));
+                (ref input, name, new SendEcho<T, T>(HeaderInformation.Explorer, _DOMInformation.ID, _globalObjectsManager));
 
-        protected IRedirect<R> send_echo<T, R>(ref IInput<T> input, string name) 
+        protected IRedirect<R> send_echo_1_1<T, R>(ref IInput<T> input, string name) 
             => _globalObjectsManager.Get<ListenEcho<T, R>, SendEcho<T, R>, IInput<T>, IRedirect<R>> 
-                (ref input, name, new SendEcho<T, R>(_DOMInformation.ID, _globalObjectsManager));
+                (ref input, name, new SendEcho<T, R>(HeaderInformation.Explorer, _DOMInformation.ID, _globalObjectsManager));
 
         protected void send_message<T>(ref IInput<T> input, string name) 
             => _globalObjectsManager.Get<ListenMessage<T>, IInput<T>> (name, ref input);
 
         protected IRedirect<T> listen_message<T>(string name) 
             => _globalObjectsManager.Add<ListenMessage<T>, IRedirect<T>> 
-                (name, new ListenMessage<T>(HeaderInformation.Explorer, _DOMInformation.ID));
+                (name, new ListenMessage<T>(HeaderInformation.Explorer, _DOMInformation.ID, _globalObjectsManager));
 
         #endregion
 
