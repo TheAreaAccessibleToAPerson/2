@@ -52,11 +52,6 @@ namespace Butterfly.system.objects.main.manager
             _DOMInformation = DOMInformation;
         }
 
-        public RedirectType Add<RedirectType, GlobalObjectType>
-            (string name, GlobalObjectType localObject)
-                where GlobalObjectType : RedirectType 
-            => Add(name, localObject);
-
         public RedirectType Add<GlobalObjectType, RedirectType, InputType>(string key, out InputType input, GlobalObjectType value)
             where GlobalObjectType : InputType, RedirectType
         {

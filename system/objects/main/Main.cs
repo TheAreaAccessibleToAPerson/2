@@ -95,12 +95,12 @@ namespace Butterfly.system.objects.main
 
         private manager.GlobalObjects _globalObjectsManager;
 
-        protected IRedirect<T, IReturn<R>> listen_echo<T, R>(string name)
-            => _globalObjectsManager.Add<IRedirect<T, IReturn<R>>, ListenEcho<T, R>>
+        protected IRedirect<T, IReturn<R>> listen_echo<T, R>(string name) 
+            => _globalObjectsManager.Add<ListenEcho<T, R>, IRedirect<T, IReturn<R>>>
                 (name, new ListenEcho<T, R>(HeaderInformation.Explorer, _DOMInformation.ID, _globalObjectsManager));
 
         protected IRedirect<T, IReturn<T>> listen_echo<T>(string name) 
-            => _globalObjectsManager.Add<IRedirect<T, IReturn<T>>, ListenEcho<T, T>>
+            => _globalObjectsManager.Add<ListenEcho<T, T>, IRedirect<T, IReturn<T>>>
                 (name, new ListenEcho<T, T>(HeaderInformation.Explorer, _DOMInformation.ID, _globalObjectsManager));
 
         protected IRedirect<T> send_echo<T>(ref IInput<T> input, string name) 
@@ -129,8 +129,10 @@ namespace Butterfly.system.objects.main
         protected void input_to<T1, T2, T3, T4>(ref IInput<T1, T2, T3, T4> input, Action<T1, T2, T3, T4> action) 
             => _inputManager.Add<T1, T2, T3, T4>(ref input, action);
 
+
         protected IRedirect<R> input_to<T1, T2, T3, T4, R>(ref IInput<T1, T2, T3, T4> input, Func<T1, T2, T3, T4, R> func) 
             => _inputManager.Add(ref input, func);
+
 
         #endregion
 

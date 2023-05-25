@@ -49,6 +49,8 @@
 
             input_to(ref _input3, obj<Test>("TEST1").Func)
                 .output_to(obj<Test>("TEST2").Action);
+
+            input_to(ref _input3, obj<Test>("TEST3").Action);
         }
 
         void Start()
@@ -64,6 +66,11 @@
 
     public class Test : Controller
     {
+        public void Action(int i1, int i2, int i3, int i4)
+        {
+            Console("ACTION4");
+        }
+
         public int Func(int i1, int i2, int i3, int i4)
         {
             return 1;
