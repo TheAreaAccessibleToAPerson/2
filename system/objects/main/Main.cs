@@ -76,8 +76,6 @@ namespace Butterfly.system.objects.main
             {
                 _globalObjectsManager = new manager.GlobalObjects(this, globalObjects, HeaderInformation, StateInformation, _DOMInformation);
 
-                _inputManager = new manager.Input(this, HeaderInformation.Explorer, _DOMInformation.ID, StateInformation, _globalObjectsManager);
-
                 _branchObjectsManager = new manager.BranchObjects(this, HeaderInformation, StateInformation, _DOMInformation, globalObjects);
                 _nodeObjectsManager = new manager.NodeObjects(this, HeaderInformation, StateInformation, _DOMInformation, globalObjects);
 
@@ -120,19 +118,21 @@ namespace Butterfly.system.objects.main
 
         #endregion
 
-        #region InputManager
+        #region Input
 
-        private manager.Input _inputManager;
+        protected void input_to<T>(ref IInput<T> input, Action<T> action)
+            => new ActionObject<T>(ref input, action);
+        protected void input_to<T1, T2>(ref IInput<T1, T2> input, Action<T1, T2> action)
+            => new ActionObject<T1, T2>(ref input, action);
+        protected void input_to<T1, T2, T3>(ref IInput<T1, T2, T3> input, Action<T1, T2, T3> action)
+            => new ActionObject<T1, T2, T3>(ref input, action);
 
-        protected void input_to<T>(ref IInput<T> input, Action<T> action) => _inputManager.Add<T>(ref input, action);
-
-        protected void input_to<T1, T2, T3, T4>(ref IInput<T1, T2, T3, T4> input, Action<T1, T2, T3, T4> action) 
-            => _inputManager.Add<T1, T2, T3, T4>(ref input, action);
-
-
-        protected IRedirect<R> input_to<T1, T2, T3, T4, R>(ref IInput<T1, T2, T3, T4> input, Func<T1, T2, T3, T4, R> func) 
-            => _inputManager.Add(ref input, func);
-
+        protected IRedirect<R> input_to<T, R>(ref IInput<T> input, Func<T, R> func) 
+            => new FuncObject<T, R>(ref input, func, HeaderInformation.Explorer, _DOMInformation.ID, _globalObjectsManager);
+        protected IRedirect<R> input_to<T1, T2, R>(ref IInput<T1, T2> input, Func<T1, T2, R> func) 
+            => new FuncObject<T1, T2, R>(ref input, func, HeaderInformation.Explorer, _DOMInformation.ID, _globalObjectsManager);
+        protected IRedirect<R> input_to<T1, T2, T3, R>(ref IInput<T1, T2, T3> input, Func<T1, T2, T3, R> func) 
+            => new FuncObject<T1, T2, T3, R>(ref input, func, HeaderInformation.Explorer, _DOMInformation.ID, _globalObjectsManager);
 
         #endregion
 
@@ -146,10 +146,12 @@ namespace Butterfly.system.objects.main
         {
             if (StateInformation.IsContruction)
             {
-                return _branchObjectsManager.Add<ObjectType>(key, localValue);
+                return _branchObjectsManager.Add<ObjectType>
+                    (key, new ObjectType(), localValue);
             }
             else
-                return _nodeObjectsManager.Add<ObjectType>(key, localValue);
+                return _nodeObjectsManager.Add<ObjectType>
+                    (key, new ObjectType(), localValue);
         }
 
         #endregion

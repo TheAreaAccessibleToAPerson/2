@@ -26,6 +26,15 @@ namespace Butterfly.system.objects.main.manager
             (ref InputType input, string key, LocalObjectType localObject)
                 where LocalObjectType : InputType, RedirectType, IInputConnected
                     where GlobalObjectType : IInformation, IInputConnect;
+
+        public void Get<GlobalObjectType, InputType>(string key, ref InputType input)
+            where GlobalObjectType : InputType, IInformation;
+
+        public RedirectType Add<GlobalObjectType, RedirectType, InputType>(string key, out InputType input, GlobalObjectType value)
+            where GlobalObjectType : InputType, RedirectType;
+
+        public RedirectType Add<GlobalObjectType, RedirectType>(string key, GlobalObjectType value)
+            where GlobalObjectType : RedirectType;
     }
 
     public sealed class GlobalObjects : Informing, IGlobalObjects

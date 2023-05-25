@@ -23,19 +23,16 @@ namespace Butterfly.system.objects.main
             : base(explorer, id)
                 => _globalObjectsManager = globalObjectsManager;
 
-        protected Action<T> _returnAction;
+        protected IInput<T> input;
 
-        public void output_to(Action<T> action) => _returnAction = action;
+        public void output_to(Action<T> action)
+            => new ActionObject<T>(ref input, action);
 
         public IRedirect<OutputValueType> output_to<OutputValueType>(Func<T, OutputValueType> func)
-        {
-            FuncObject<T, OutputValueType> funcObject = new FuncObject<T, OutputValueType>
-                (func, _explorer, _id, _globalObjectsManager);
+            => new FuncObject<T, OutputValueType> (ref input, func, _explorer, _id, _globalObjectsManager);
 
-            _returnAction = funcObject.To;
-
-            return funcObject;
-        }
+        public void to_send_message(string name)
+            => _globalObjectsManager.Get<ListenMessage<T>, IInput<T>> (name, ref input);
     }
 
     public abstract class Redirect<T1, T2> : Information, IRedirect<T1, T2>

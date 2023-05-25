@@ -46,7 +46,7 @@ namespace Butterfly.system.objects.main
 
         void IInput<T>.To(T value) => _inputAction.To(value, this);
 
-        public void To(R value) => _returnAction(value);
+        public void To(R value) => input.To(value);
 
         public ulong GetUnieueID() => s_uniqueID;
 

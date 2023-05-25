@@ -14,6 +14,9 @@
             listen_message<int>("Message")
                 .output_to((message) => { Console(message); });
 
+            listen_message<string>("MessageString")
+                .output_to((message) => { Console(message + "!!!???!!!!!!!!"); });
+
             listen_echo<int, int>("Echo")
                 .output_to((number, reseive) => { Console("KDJFDKJF"); reseive.To(11); });
 
@@ -38,7 +41,7 @@
     public class III : Controller
     {
         IInput<int> _input, _input1, _input2;
-        IInput<int, int, int, int> _input3;
+        IInput<int> _input3;
 
         void Construction()
         {
@@ -48,9 +51,9 @@
             send_message<int>(ref _input1, "Message");
 
             input_to(ref _input3, obj<Test>("TEST1").Func)
-                .output_to(obj<Test>("TEST2").Action);
+                .to_send_message("MessageString");
 
-            input_to(ref _input3, obj<Test>("TEST3").Action);
+            //input_to(ref _input3, obj<Test>("TEST3").Action);
         }
 
         void Start()
@@ -60,7 +63,7 @@
 
             _input1.To(22);
 
-            _input3.To(0, 0, 0, 0);
+            _input3.To(0);
         }
     }
 
@@ -71,12 +74,13 @@
             Console("ACTION4");
         }
 
-        public int Func(int i1, int i2, int i3, int i4)
+        public string Func(int i1)
         {
-            return 1;
+            Console("FUNC!!!!");
+            return "STRT";
         }
 
-        public int Func(int i)
+        public int Func1(int i)
         {
             Console("FUNC:" + i);
 

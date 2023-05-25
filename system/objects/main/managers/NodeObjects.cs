@@ -49,7 +49,7 @@ namespace Butterfly.system.objects.main.manager
             }
         }
 
-        public NodeObjectType Add<NodeObjectType>(string key, object localValue = null)
+        public NodeObjectType Add<NodeObjectType>(string key, NodeObjectType nodeObject, object localValue = null)
             where NodeObjectType : main.Object, new()
         {
             lock (_stateInformation.Locker)
@@ -69,8 +69,6 @@ namespace Butterfly.system.objects.main.manager
                     }
                     else
                     {
-                        NodeObjectType nodeObject = new NodeObjectType();
-
                         if (nodeObject is main.description.IDOM nodeObjectDOM)
                         {
                             nodeObjectDOM.NodeDefine(key, _DOMInformation.NestingNodeNamberInTheSystem + 1,

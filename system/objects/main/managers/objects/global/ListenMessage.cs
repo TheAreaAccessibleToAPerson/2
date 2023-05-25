@@ -5,6 +5,6 @@ namespace Butterfly.system.objects.main
         public ListenMessage(string explorer, ulong id, manager.IGlobalObjects globalObjectsManager)
             : base (explorer, id, globalObjectsManager){}
 
-        public void To(ListenValueType value) => _returnAction(value);
+        public void To(ListenValueType value) => input.To(value);
     }
 }
