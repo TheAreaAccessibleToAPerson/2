@@ -72,6 +72,21 @@ namespace Butterfly.system.objects.main.information
         }
 
         /// <summary>
+        /// Хранит индекс 
+        /// </summary>
+        public const int INDEX_OBJECT_ID = 0;
+        public const int INDEX_NODE_OBJECT_ID = 1;
+
+        /// <summary>
+        /// Возращает массив данных в котором хранится id текущего обьекта
+        /// и id узла. При работе с данными получеными через текущий метод
+        /// используейте константы опеделеные в нутри класса:
+        /// 1) INDEX_OBJECT_ID - указывает на позицию в массиве где хранится id текущего обьетка.
+        /// 2) INDEX_NODE_OBJECT_ID - указывает на позицию в массиве где хранится id текущего узла. 
+        /// <returns></returns>
+        public ulong[] GetIDs() => new ulong[] { ID, NodeID };
+
+        /// <summary>
         /// Инициализируем все необходимые данные DOM для ветки. 
         /// </summary>
         /// <param name="keyObject">Ключ обьекта по которому он был создан в родители.</param>
@@ -116,8 +131,7 @@ namespace Butterfly.system.objects.main.information
                 main.Object currentObject, main.Object parentObject, main.Object nearIndependentNodeObject,
                     root.IManager rootManager)
         {
-            ID = s_indexUniqueObjectID++;
-            NodeID = s_indexUniqueNodeID++;
+            ID = NodeID = s_indexUniqueObjectID++;
 
             KeyObject = keyObject;
             NestingNodeNamberInTheSystem = nestingNodeNamberInTheSystem;
@@ -133,9 +147,5 @@ namespace Butterfly.system.objects.main.information
         /// Хранит уникальный индекс ID для следующего обьекта. 
         /// </summary>
         private static ulong s_indexUniqueObjectID = 0;
-        /// <summary>
-        /// Хранит уникальный индекс ID для следующего узла. 
-        /// </summary>
-        private static ulong s_indexUniqueNodeID = 0;
     }
 }

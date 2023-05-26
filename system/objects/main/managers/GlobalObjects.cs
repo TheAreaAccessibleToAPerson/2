@@ -99,7 +99,7 @@ namespace Butterfly.system.objects.main.manager
                 {
                     if (globalObject is GlobalObjectType globalObjectReduse)
                     {
-                        if (_DOMInformation.IsParentID(globalObjectReduse.GetID()))
+                        if (_DOMInformation.IsParentID(globalObjectReduse.GetNodeID()))
                         {
                             return globalObjectReduse;
                         }

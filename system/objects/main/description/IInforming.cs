@@ -57,7 +57,7 @@ namespace Butterfly.system.objects.main.informing
         /// </summary>
         /// <param name="message">Сообщение содержащее описание причины сбоя.</param>
         /// <param name="arg">Необходимые аргументы для того что бы точно понять причину сбоя.</param>
-        public void Exception(string message, params string[] arg);
+        public Exception Exception(string message, params string[] arg);
 
         /// <summary>
         /// Выводит в консоль системное сообщение.

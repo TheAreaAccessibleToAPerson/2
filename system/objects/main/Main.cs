@@ -1,4 +1,3 @@
-using System.Security.AccessControl;
 namespace Butterfly.system.objects.main
 {
     /// <summary>
@@ -95,26 +94,26 @@ namespace Butterfly.system.objects.main
 
         protected IRedirect<T, IReturn<R>> listen_echo<T, R>(string name) 
             => _globalObjectsManager.Add<ListenEcho<T, R>, IRedirect<T, IReturn<R>>>
-                (name, new ListenEcho<T, R>(HeaderInformation.Explorer, _DOMInformation.ID, _globalObjectsManager));
+                (name, new ListenEcho<T, R>(HeaderInformation.Explorer, _DOMInformation.GetIDs(), _globalObjectsManager));
 
         protected IRedirect<T, IReturn<T>> listen_echo<T>(string name) 
             => _globalObjectsManager.Add<ListenEcho<T, T>, IRedirect<T, IReturn<T>>>
-                (name, new ListenEcho<T, T>(HeaderInformation.Explorer, _DOMInformation.ID, _globalObjectsManager));
+                (name, new ListenEcho<T, T>(HeaderInformation.Explorer, _DOMInformation.GetIDs(), _globalObjectsManager));
 
         protected IRedirect<T> send_echo<T>(ref IInput<T> input, string name) 
             => _globalObjectsManager.Get<ListenEcho<T, T>, SendEcho<T, T>, IInput<T>, IRedirect<T>> 
-                (ref input, name, new SendEcho<T, T>(HeaderInformation.Explorer, _DOMInformation.ID, _globalObjectsManager));
+                (ref input, name, new SendEcho<T, T>(HeaderInformation.Explorer, _DOMInformation.GetIDs(), _globalObjectsManager));
 
         protected IRedirect<R> send_echo_1_1<T, R>(ref IInput<T> input, string name) 
             => _globalObjectsManager.Get<ListenEcho<T, R>, SendEcho<T, R>, IInput<T>, IRedirect<R>> 
-                (ref input, name, new SendEcho<T, R>(HeaderInformation.Explorer, _DOMInformation.ID, _globalObjectsManager));
+                (ref input, name, new SendEcho<T, R>(HeaderInformation.Explorer, _DOMInformation.GetIDs(), _globalObjectsManager));
 
         protected void send_message<T>(ref IInput<T> input, string name) 
             => _globalObjectsManager.Get<ListenMessage<T>, IInput<T>> (name, ref input);
 
         protected IRedirect<T> listen_message<T>(string name) 
             => _globalObjectsManager.Add<ListenMessage<T>, IRedirect<T>> 
-                (name, new ListenMessage<T>(HeaderInformation.Explorer, _DOMInformation.ID, _globalObjectsManager));
+                (name, new ListenMessage<T>(HeaderInformation.Explorer, _DOMInformation.GetIDs(), _globalObjectsManager));
 
         #endregion
 
@@ -128,11 +127,11 @@ namespace Butterfly.system.objects.main
             => new ActionObject<T1, T2, T3>(ref input, action);
 
         protected IRedirect<R> input_to<T, R>(ref IInput<T> input, Func<T, R> func) 
-            => new FuncObject<T, R>(ref input, func, HeaderInformation.Explorer, _DOMInformation.ID, _globalObjectsManager);
+            => new FuncObject<T, R>(ref input, func, HeaderInformation.Explorer, _DOMInformation.GetIDs(), _globalObjectsManager);
         protected IRedirect<R> input_to<T1, T2, R>(ref IInput<T1, T2> input, Func<T1, T2, R> func) 
-            => new FuncObject<T1, T2, R>(ref input, func, HeaderInformation.Explorer, _DOMInformation.ID, _globalObjectsManager);
+            => new FuncObject<T1, T2, R>(ref input, func, HeaderInformation.Explorer, _DOMInformation.GetIDs(), _globalObjectsManager);
         protected IRedirect<R> input_to<T1, T2, T3, R>(ref IInput<T1, T2, T3> input, Func<T1, T2, T3, R> func) 
-            => new FuncObject<T1, T2, T3, R>(ref input, func, HeaderInformation.Explorer, _DOMInformation.ID, _globalObjectsManager);
+            => new FuncObject<T1, T2, T3, R>(ref input, func, HeaderInformation.Explorer, _DOMInformation.GetIDs(), _globalObjectsManager);
 
         #endregion
 
@@ -151,7 +150,7 @@ namespace Butterfly.system.objects.main
             }
             else
                 return _nodeObjectsManager.Add<ObjectType>
-                    (key, new ObjectType(), localValue);
+                (key, new ObjectType(), localValue);
         }
 
         #endregion
@@ -176,9 +175,15 @@ namespace Butterfly.system.objects.main
         public void Console(bool message) => Console(message.ToString());
         public void Console(float message) => Console(message.ToString());
 
-        public void Exception(string message, params string[] arg)
+        public Exception Exception(string message, params string[] arg)
         {
+            global::System.Console.ForegroundColor = ConsoleColor.Red;
+
             System.Console.WriteLine(message, arg);
+
+            sleep(100000);
+
+            throw new Exception(message);
         }
 
         public void SystemInformation(string message)

@@ -117,10 +117,10 @@ namespace Butterfly.system.objects.main.manager
             _headerInformation = headerInformation;
         }
 
-        public void Initialize(dispatcher.ILifeCyrcle lifeCyrcleDispatcher, dispatcher.ISubscribe subscribeDispatcher, 
+        public void Initialize(dispatcher.ILifeCyrcle lifeCyrcleDispathcer, dispatcher.ISubscribe subscribeDispatcher, 
             dispatcher.IThreads threadsDispatcher, dispatcher.INode nodeDispatcher)
         {
-            _lifeCyrcleDispatcher = lifeCyrcleDispatcher;
+            _lifeCyrcleDispatcher = lifeCyrcleDispathcer;
             _subscribeDispatcher = subscribeDispatcher;
             _threadsDispatcher = threadsDispatcher;
             _nodeDispatcher = nodeDispatcher;

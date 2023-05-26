@@ -9,9 +9,15 @@ namespace Butterfly.system.objects.main
         public string GetExplorer();
 
         /// <summary>
-        /// Хранит ID создателя.
+        /// Хранит ID обьекта в нутри которого был создан.
         /// </summary>
         /// <returns></returns>
         public ulong GetID();
+
+        /// <summary>
+        /// Хранит ID узла в нутри которого был создан. 
+        /// </summary>
+        /// <returns></returns>
+        public ulong GetNodeID();
     }
 }

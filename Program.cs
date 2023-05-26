@@ -38,11 +38,15 @@
         }
     }
 
+    public class Elem
+    {
+        public void Run(){}
+    }
+
     public class III : Controller
     {
         IInput<int> _input, _input1, _input2;
         IInput<int> _input3;
-
         void Construction()
         {
             send_echo_1_1<int, int>(ref _input, "Echo")

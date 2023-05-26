@@ -1,12 +1,18 @@
 namespace Butterfly
 {
-    public interface IReturn<ReturnValueType> 
+    public interface IReturn<R> 
     { 
-        void To(ReturnValueType value); 
+        void To(R value); 
         ulong GetID();
         ulong GetUnieueID();
     }
 
+    public interface IReturn<R1, R2> 
+    { 
+        void To(R1 value1, R2 value2); 
+        ulong GetID();
+        ulong GetUnieueID();
+    }
 }
 
 namespace Butterfly.system.objects.main
@@ -23,8 +29,8 @@ namespace Butterfly.system.objects.main
 
         object IInputConnect.GetConnect() => this;
 
-        public ListenEcho(string explorer, ulong id, manager.IGlobalObjects globalObjectManager) 
-            : base (explorer, id, globalObjectManager) {}
+        public ListenEcho(string explorer, ulong[] ids, manager.IGlobalObjects globalObjectManager) 
+            : base (explorer, ids, globalObjectManager) {}
     }
 
     public sealed class SendEcho<T, R> : Redirect<R>, IInput<T>, IInputConnected, IReturn<R>
@@ -41,8 +47,8 @@ namespace Butterfly.system.objects.main
                 throw new Exception($"Не удалось установить связь объекта {GetType().FullName} c обьектом {inputConnect.GetType().FullName}.");
         }
 
-        public SendEcho(string explorer, ulong id, manager.IGlobalObjects globalObjectManager) 
-            : base(explorer, id, globalObjectManager){}
+        public SendEcho(string explorer, ulong[] ids, manager.IGlobalObjects globalObjectManager) 
+            : base(explorer, ids, globalObjectManager){}
 
         void IInput<T>.To(T value) => _inputAction.To(value, this);
 
