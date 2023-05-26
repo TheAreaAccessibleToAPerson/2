@@ -19,5 +19,11 @@ namespace Butterfly.system.objects.main
         /// </summary>
         /// <returns></returns>
         public ulong GetNodeID();
+
+        /// <summary>
+        /// Получает доступ к менеджеру глобальных обьектов. 
+        /// </summary>
+        /// <returns></returns>
+        public manager.IGlobalObjects GetGlobalObjectsManager();
     }
 }

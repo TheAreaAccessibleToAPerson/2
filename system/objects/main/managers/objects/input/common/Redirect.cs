@@ -2,35 +2,23 @@ namespace Butterfly.system.objects.main
 {
     public abstract class Information : IInformation
     {
-        /// <summary>
-        /// Место положение в нутри системы. 
-        /// </summary>
-        protected readonly string Explorer;
+        private readonly IInformation _information;
 
-        /// <summary>
-        /// 1) id обьекта в нутри которого был создан данный обьект.
-        /// 2) id узла в нутри которого был создан данный обьект.
-        /// </summary>
-        protected readonly ulong[] IDs;
+        public Information(IInformation information) 
+            => _information = information;
 
-        public Information(string explorer, ulong[] ids)
-        {
-            Explorer = explorer;
-            IDs = ids;
-        }
+        public string GetExplorer() => _information.GetExplorer();
+        public ulong GetID() => _information.GetID();
+        public ulong GetNodeID() => _information.GetNodeID();
 
-        public string GetExplorer() => Explorer;
-        public ulong GetID() => IDs[information.DOM.INDEX_OBJECT_ID];
-        public ulong GetNodeID() => IDs[information.DOM.INDEX_NODE_OBJECT_ID];
+        public manager.IGlobalObjects GetGlobalObjectsManager() 
+            => _information.GetGlobalObjectsManager();
+
     }
 
     public abstract class Redirect<T> : Information, IRedirect<T>
     {
-        private readonly manager.IGlobalObjects _globalObjectsManager;
-
-        public Redirect(string explorer, ulong[] ids, manager.IGlobalObjects globalObjectsManager) 
-            : base(explorer, ids)
-                => _globalObjectsManager = globalObjectsManager;
+        public Redirect(IInformation information) : base(information){}
 
         protected IInput<T> input;
 
@@ -38,10 +26,10 @@ namespace Butterfly.system.objects.main
             => new ActionObject<T>(ref input, action);
 
         public IRedirect<OutputValueType> output_to<OutputValueType>(Func<T, OutputValueType> func)
-            => new FuncObject<T, OutputValueType> (ref input, func, Explorer, IDs, _globalObjectsManager);
+            => new FuncObject<T, OutputValueType> (ref input, func, this);
 
         public void to_send_message(string name)
-            => _globalObjectsManager.Get<ListenMessage<T>, IInput<T>> (name, ref input);
+            => GetGlobalObjectsManager().Get<ListenMessage<T>, IInput<T>> (name, ref input);
     }
 
     public abstract class Redirect<T1, T2> : Information, IRedirect<T1, T2>
@@ -50,9 +38,7 @@ namespace Butterfly.system.objects.main
 
         protected Action<T1, T2> _returnAction;
 
-        public Redirect(string explorer, ulong[] ids, manager.IGlobalObjects globalObjectsManager) 
-            : base(explorer, ids)
-                => _globalObjectsManager = globalObjectsManager;
+        public Redirect(IInformation information) : base(information){}
 
         public void output_to(Action<T1, T2> action) => _returnAction = action;
 

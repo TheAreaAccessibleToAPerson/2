@@ -29,8 +29,7 @@ namespace Butterfly.system.objects.main
 
         object IInputConnect.GetConnect() => this;
 
-        public ListenEcho(string explorer, ulong[] ids, manager.IGlobalObjects globalObjectManager) 
-            : base (explorer, ids, globalObjectManager) {}
+        public ListenEcho(IInformation information) : base (information) {}
     }
 
     public sealed class SendEcho<T, R> : Redirect<R>, IInput<T>, IInputConnected, IReturn<R>
@@ -47,8 +46,7 @@ namespace Butterfly.system.objects.main
                 throw new Exception($"Не удалось установить связь объекта {GetType().FullName} c обьектом {inputConnect.GetType().FullName}.");
         }
 
-        public SendEcho(string explorer, ulong[] ids, manager.IGlobalObjects globalObjectManager) 
-            : base(explorer, ids, globalObjectManager){}
+        public SendEcho(IInformation information) : base(information){}
 
         void IInput<T>.To(T value) => _inputAction.To(value, this);
 

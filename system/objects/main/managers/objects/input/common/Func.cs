@@ -4,9 +4,8 @@ namespace Butterfly.system.objects.main
     {
         private readonly Func<T1, R> _func;
 
-        public FuncObject(ref IInput<T1> input, Func<T1, R> func, string explorer, ulong[] ids, 
-            manager.IGlobalObjects globalObjectsManager)
-            : base (explorer, ids, globalObjectsManager)
+        public FuncObject(ref IInput<T1> input, Func<T1, R> func, IInformation information) 
+            : base (information)
             {
                 _func = func;
                 input = this;
@@ -20,10 +19,8 @@ namespace Butterfly.system.objects.main
     {
         private readonly Func<T1, T2, R> _func;
 
-        public FuncObject(ref IInput<T1, T2> input, 
-            Func<T1, T2, R> func, string explorer, ulong[] ids, 
-                manager.IGlobalObjects globalObjectsManager)
-                    : base (explorer, ids, globalObjectsManager)
+        public FuncObject(ref IInput<T1, T2> input, Func<T1, T2, R> func, IInformation information)
+            : base (information)
             {
                 _func = func;
                 input = this;
@@ -37,10 +34,8 @@ namespace Butterfly.system.objects.main
     {
         private readonly Func<T1, T2, T3, R> _func;
 
-        public FuncObject(ref IInput<T1, T2, T3> input, 
-            Func<T1, T2, T3, R> func, string explorer, ulong[] ids, 
-                manager.IGlobalObjects globalObjectsManager)
-                    : base (explorer, ids, globalObjectsManager)
+        public FuncObject(ref IInput<T1, T2, T3> input, Func<T1, T2, T3, R> func, IInformation information)
+            : base (information)
             {
                 _func = func;
                 input = this;
@@ -55,10 +50,8 @@ namespace Butterfly.system.objects.main
     {
         private readonly Func<T1, T2, T3, T4, R> _func;
 
-        public FuncObject(ref IInput<T1, T2, T3, T4> input, 
-            Func<T1, T2, T3, T4, R> func, string explorer, ulong[] ids, 
-                manager.IGlobalObjects globalObjectsManager)
-                    : base (explorer, ids, globalObjectsManager)
+        public FuncObject(ref IInput<T1, T2, T3, T4> input, Func<T1, T2, T3, T4, R> func, IInformation information)
+            : base (information)
             {
                 _func = func;
                 input = this;
@@ -73,10 +66,8 @@ namespace Butterfly.system.objects.main
     {
         private readonly Func<T1, T2, T3, T4, T5, R> _func;
 
-        public FuncObject(ref IInput<T1, T2, T3, T4, T5> input, 
-            Func<T1, T2, T3, T4, T5, R> func, string explorer, ulong[] ids, 
-                manager.IGlobalObjects globalObjectsManager)
-                    : base (explorer, ids, globalObjectsManager)
+        public FuncObject(ref IInput<T1, T2, T3, T4, T5> input, Func<T1, T2, T3, T4, T5, R> func, IInformation information)
+            : base (information)
             {
                 _func = func;
                 input = this;
@@ -92,9 +83,8 @@ namespace Butterfly.system.objects.main
         private readonly Func<T1, T2, T3, T4, T5, T6, R> _func;
 
         public FuncObject(ref IInput<T1, T2, T3, T4, T5, T6> input, 
-            Func<T1, T2, T3, T4, T5, T6, R> func, string explorer, ulong[] ids, 
-                manager.IGlobalObjects globalObjectsManager)
-                    : base (explorer, ids, globalObjectsManager)
+            Func<T1, T2, T3, T4, T5, T6, R> func, IInformation information)
+            : base (information)
             {
                 _func = func;
                 input = this;
@@ -110,9 +100,8 @@ namespace Butterfly.system.objects.main
         private readonly Func<T1, T2, T3, T4, T5, T6, T7, R> _func;
 
         public FuncObject(ref IInput<T1, T2, T3, T4, T5, T6, T7> input, 
-            Func<T1, T2, T3, T4, T5, T6, T7, R> func, string explorer, ulong[] ids, 
-                manager.IGlobalObjects globalObjectsManager)
-                    : base (explorer, ids, globalObjectsManager)
+            Func<T1, T2, T3, T4, T5, T6, T7, R> func, IInformation information)
+            : base (information)
             {
                 _func = func;
                 input = this;
@@ -128,9 +117,8 @@ namespace Butterfly.system.objects.main
         private readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, R> _func;
 
         public FuncObject(ref IInput<T1, T2, T3, T4, T5, T6, T7, T8> input, 
-            Func<T1, T2, T3, T4, T5, T6, T7, T8, R> func, string explorer, ulong[] ids, 
-                manager.IGlobalObjects globalObjectsManager)
-                    : base (explorer, ids, globalObjectsManager)
+            Func<T1, T2, T3, T4, T5, T6, T7, T8, R> func, IInformation information)
+            : base (information)
             {
                 _func = func;
                 input = this;
@@ -146,9 +134,8 @@ namespace Butterfly.system.objects.main
         private readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> _func;
 
         public FuncObject(ref IInput<T1, T2, T3, T4, T5, T6, T7, T8, T9> input, 
-            Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> func, string explorer, ulong[] ids, 
-                manager.IGlobalObjects globalObjectsManager)
-                    : base (explorer, ids, globalObjectsManager)
+            Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> func, IInformation information)
+            : base (information)
             {
                 _func = func;
                 input = this;
@@ -164,9 +151,8 @@ namespace Butterfly.system.objects.main
         private readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R> _func;
 
         public FuncObject(ref IInput<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> input, 
-            Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R> func, string explorer, ulong[] ids, 
-                manager.IGlobalObjects globalObjectsManager)
-                    : base (explorer, ids, globalObjectsManager)
+            Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R> func, IInformation information)
+            : base (information)
             {
                 _func = func;
                 input = this;

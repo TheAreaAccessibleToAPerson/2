@@ -72,21 +72,6 @@ namespace Butterfly.system.objects.main.information
         }
 
         /// <summary>
-        /// Хранит индекс 
-        /// </summary>
-        public const int INDEX_OBJECT_ID = 0;
-        public const int INDEX_NODE_OBJECT_ID = 1;
-
-        /// <summary>
-        /// Возращает массив данных в котором хранится id текущего обьекта
-        /// и id узла. При работе с данными получеными через текущий метод
-        /// используейте константы опеделеные в нутри класса:
-        /// 1) INDEX_OBJECT_ID - указывает на позицию в массиве где хранится id текущего обьетка.
-        /// 2) INDEX_NODE_OBJECT_ID - указывает на позицию в массиве где хранится id текущего узла. 
-        /// <returns></returns>
-        public ulong[] GetIDs() => new ulong[] { ID, NodeID };
-
-        /// <summary>
         /// Инициализируем все необходимые данные DOM для ветки. 
         /// </summary>
         /// <param name="keyObject">Ключ обьекта по которому он был создан в родители.</param>
