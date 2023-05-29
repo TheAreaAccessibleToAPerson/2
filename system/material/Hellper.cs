@@ -89,27 +89,58 @@
             return result;
         }
 
-        public static ObjectType ExpendAction_1Array<ValueType, ObjectType>(ref Action<ValueType>[] pArray, ObjectType obj)
-            where ObjectType : IInput<ValueType>
+        /// <summary>
+        /// Получает обьект реализующий идеи доступа к нему
+        /// и возращает ссылку.
+        /// </summary>
+        /// <param name="input">Ссылка на доступ к текущему обьекту.</param>
+        /// <param name="obj">Обьект доступ к которму нужно получить.</param>
+        /// <typeparam name="ObjectType">Тип обьекта к которму необходимо получить доступ.</typeparam>
+        /// <typeparam name="InputType">Тип интерфейса который описывает способ получения доступа.</typeparam>
+        /// <returns></returns>
+        public static ObjectType GetInput<ObjectType, InputType>
+            (ref InputType input, ObjectType obj)
+                where ObjectType : InputType
         {
-            Action<ValueType>[] result = new Action<ValueType>[pArray.Length + 1];
-
-            pArray.CopyTo(result, 0);
-            result[pArray.Length] = obj.To;
-
-            pArray = result;
+            input = obj;
 
             return obj;
         }
 
-        public static void ExpendAction_1Array<ValueType>(ref Action<ValueType>[] pArray, Action<ValueType> action)
+        /// <summary>
+        /// Принимает на вход два обьекта и ссылку на входные данные для первого обьекта.
+        /// Первый обьект реализует интерфейс IInputConnected который описывает способ подключения
+        /// к обьекту реализующего интерфейс IInputConnect описывающий точку подключения.
+        /// <param name="input">Способ передачи данных в первый обьект.</param>
+        /// <param name="object1">Обьект реализующий подключение.</param>
+        /// <param name="object2">Обьект предаставляющий точку для подключения.</param>
+        /// <typeparam name="ObjectType1">Тип обьекта реализующий интефейс IInputConnected.</typeparam>
+        /// <typeparam name="InputType">Тип передачи данных описаный в ObjectType1.</typeparam>
+        /// <typeparam name="ObjectType2">Тип обьекта реализующий интерфейс IInputConnect.</typeparam>
+        public static ObjectType1 SetConnected<ObjectType1, InputType, ObjectType2>
+            (ref InputType input, ObjectType1 object1, ObjectType2 object2)
+                where ObjectType1 : system.objects.main.IInputConnected, InputType
+                where ObjectType2 : system.objects.main.IInputConnect
         {
-            Action<ValueType>[] result = new Action<ValueType>[pArray.Length + 1];
+            input = object1;
 
-            pArray.CopyTo(result, 0);
-            result[pArray.Length] = action;
+            object1.SetConnected(object2.GetConnect());
 
-            pArray = result;
+            return object1;
+        }
+
+        public static void Connected<ConnectedType>(object inputConnect, ref ConnectedType connected,
+            Type connectedObjectType)
+        {
+            if (inputConnect is ConnectedType inputConnectReduse)
+            {
+                connected = inputConnectReduse;
+            }
+            else 
+            {
+                 throw new Exception($"Вы не можете соединить обьект {connectedObjectType.FullName} c"+
+                    $"c объектом {inputConnect.GetType().FullName}");
+            }
         }
 
         public static ValueType[][] ExpendRange<ValueType>(ValueType[][] pArray, int pArrayLength)

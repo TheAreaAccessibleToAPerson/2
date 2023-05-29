@@ -11,6 +11,8 @@
 
         void Construction()
         {
+            //unsafe_parallel_invoke("TestParallel");
+
             listen_message<int>("Message")
                 .output_to((message) => { Console(message); });
 
@@ -20,6 +22,8 @@
             listen_echo<int, int>("Echo")
                 .output_to((number, reseive) => { Console("KDJFDKJF"); reseive.To(11); });
 
+            listen_echo<int, int>("Echo1")
+                .output_to((number, reseive) => { Console("TEST ECHO2"); reseive.To(121); });
 
             //input_to(ref _input, Run);
 
@@ -38,36 +42,43 @@
         }
     }
 
-    public class Elem
-    {
-        public void Run(){}
-    }
-
     public class III : Controller
     {
         IInput<int> _input, _input1, _input2;
         IInput<int> _input3;
+
         void Construction()
         {
-            send_echo_1_1<int, int>(ref _input, "Echo")
+            send_echo<int>(ref _input, "Echo")
                 .output_to((number) => Console("ECHO"));
 
             send_message<int>(ref _input1, "Message");
 
             input_to(ref _input3, obj<Test>("TEST1").Func)
-                .to_send_message("MessageString");
+                .send_message_to("MessageString");
+
+            input_to(ref _input2, obj<Test>("TEST1").Func1)
+                .output_to(obj<Test>("TEST2").Func2)
+                    .output_to(obj<Test>("TEST3").Func2)
+                        .send_echo_to("Echo1")
+                            .output_to((number) => 
+                                {
+                                    Console("ECHO TEST 1");
+                                });
 
             //input_to(ref _input3, obj<Test>("TEST3").Action);
+
+            /*
+            input_to_unsafe_parallel
+                (ref _input3, obj<Test>("TEST33").Action, "TestParallel");
+            */
         }
 
         void Start()
         {
-            _input.To(11);
-            _input.To(11);
-
-            _input1.To(22);
-
-            _input3.To(0);
+            _input1.To(333);
+            _input2.To(333);
+            _input.To(22);
         }
     }
 
@@ -89,6 +100,11 @@
             Console("FUNC:" + i);
 
             return i + 1;
+        }
+
+        public int Func2(int i)
+        {
+            return 22;
         }
 
         public void Action(int i)

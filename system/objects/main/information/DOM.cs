@@ -61,7 +61,8 @@ namespace Butterfly.system.objects.main.information
         public readonly root.IManager RootManager;
 
         /// <summary>
-        /// Принадлежит ли переданый ID родительскому обьекту. 
+        /// Принимает на вход id и проверяет имеет ли 
+        /// текущий обьект родственые отношения к нему.
         /// </summary>
         /// <returns></returns>
         public bool IsParentID(ulong id)

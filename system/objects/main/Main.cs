@@ -11,8 +11,6 @@ namespace Butterfly.system.objects.main
         public readonly information.Header HeaderInformation;
         private readonly information.Tegs _tegsInformation;
 
-
-
         public Object(string type)
         {
             StateInformation = new information.State();
@@ -36,7 +34,8 @@ namespace Butterfly.system.objects.main
 
         private manager.Dispatcher _dispatcherManager;
 
-        void manager.IDispatcher.Process(string command) => _dispatcherManager.Process(command);
+        void manager.IDispatcher.Process(string command) 
+            => _dispatcherManager.Process(command);
 
         #endregion
 
@@ -44,8 +43,8 @@ namespace Butterfly.system.objects.main
 
         private information.DOM _DOMInformation;
 
-        void description.IDOM.CreatingNode() => _dispatcherManager.Start();
-
+        void description.IDOM.CreatingNode() 
+            => _dispatcherManager.Start();
 
         void description.IDOM.BranchDefine(string keyObject, ulong nodeID, ulong nestingNodeNamberInTheSystem,
             ulong nestingNodeNamberInTheNode, ulong[] parentObjectsID, main.Object parentObject, main.Object nodeObject,
@@ -117,6 +116,13 @@ namespace Butterfly.system.objects.main
             => _globalObjectsManager.Add<ListenMessage<T>, IRedirect<T>> 
                 (name, new ListenMessage<T>(this));
 
+        protected void unsafe_parallel_invoke(string name)
+            => _globalObjectsManager.Add(name, new UnsafeParallelInvoke(this));
+
+        protected void input_to_unsafe_parallel<T>(ref IInput<T> input, Action<T> action, string name)
+            => _globalObjectsManager.Get<UnsafeParallelInvoke, UnsafeParallelActionObject<T>>
+                (name, new UnsafeParallelActionObject<T>(ref input, action));
+
         #endregion
 
         #region Input
@@ -142,17 +148,17 @@ namespace Butterfly.system.objects.main
         private manager.BranchObjects _branchObjectsManager;
         private manager.NodeObjects _nodeObjectsManager;
 
-        protected ObjectType obj<ObjectType>(string key, params object[] localValue)
+        protected ObjectType obj<ObjectType>(string key, params object[] localValues)
             where ObjectType : main.Object, new()
         {
             if (StateInformation.IsContruction)
             {
                 return _branchObjectsManager.Add<ObjectType>
-                    (key, new ObjectType(), localValue);
+                    (key, new ObjectType(), localValues);
             }
             else
                 return _nodeObjectsManager.Add<ObjectType>
-                (key, new ObjectType(), localValue);
+                    (key, new ObjectType(), localValues);
         }
 
         #endregion

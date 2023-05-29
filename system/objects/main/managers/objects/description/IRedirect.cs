@@ -8,7 +8,8 @@ namespace Butterfly.system.objects.main
     {
         public void output_to(Action<T1> action);
         public IRedirect<OutputValueType> output_to<OutputValueType>(Func<T1, OutputValueType> func);
-        public void to_send_message(string name);
+        public void send_message_to(string name);
+        public IRedirect<T1> send_echo_to(string name);
     }
 
     /// <summary>

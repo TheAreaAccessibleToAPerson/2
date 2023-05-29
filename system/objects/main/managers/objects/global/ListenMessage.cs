@@ -1,9 +1,9 @@
 namespace Butterfly.system.objects.main
 {
-    public sealed class ListenMessage<ListenValueType> : Redirect<ListenValueType>, IInput<ListenValueType>
+    public sealed class ListenMessage<T> : Redirect<T>, IInput<T>
     {
         public ListenMessage(IInformation information) : base (information){}
 
-        public void To(ListenValueType value) => input.To(value);
+        public void To(T value) => input.To(value);
     }
 }

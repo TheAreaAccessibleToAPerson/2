@@ -1,42 +1,5 @@
 namespace Butterfly.system.objects.main.manager
 {
-    /// <summary>
-    /// Описывает методы для работы с глобальными обьектами с проверкой на соответсвие:
-    /// 1) Создания/получений в определеный момент жизненого цикла.
-    /// 2) При создании отсутвия схожего обьекта по ключу.
-    /// 3)  
-    /// </summary>
-    public interface IGlobalObjects
-    {
-        /// <summary>
-        /// Получает глобальный обьект у обьекта к которому приходится потомком.
-        /// После чего с помощью описаного способа в IInputConnet получаем ссылку на 
-        /// принятие входных данных и передаем ее локальному обьекту с помощью
-        /// описаного способа в IInputConnected. 
-        /// </summary>
-        /// <param name="input">Способ передачи данных в локальный обьект.</param>
-        /// <param name="key">Ключ по которому хранится глобальный обьект.</param>
-        /// <param name="localObject">Локальный обьект через который мы будем общатся с глобальным обьектом.</param>
-        /// <typeparam name="GlobalObjectType">Тип глобального обьекта.</typeparam>
-        /// <typeparam name="LocalObjectType">Тип локального обьекта.</typeparam>
-        /// <typeparam name="InputType">Тип с помощью которого мы будет передавать данные в локальный обьект.</typeparam>
-        /// <typeparam name="RedirectType">Тип который примит ответ из глобального обьекта.</typeparam>
-        /// <returns></returns>
-        public RedirectType Get<GlobalObjectType, LocalObjectType, InputType, RedirectType> 
-            (ref InputType input, string key, LocalObjectType localObject)
-                where LocalObjectType : InputType, RedirectType, IInputConnected
-                    where GlobalObjectType : IInformation, IInputConnect;
-
-        public void Get<GlobalObjectType, InputType>(string key, ref InputType input)
-            where GlobalObjectType : InputType, IInformation;
-
-        public RedirectType Add<GlobalObjectType, RedirectType, InputType>(string key, out InputType input, GlobalObjectType value)
-            where GlobalObjectType : InputType, RedirectType;
-
-        public RedirectType Add<GlobalObjectType, RedirectType>(string key, GlobalObjectType value)
-            where GlobalObjectType : RedirectType;
-    }
-
     public sealed class GlobalObjects : Informing, IGlobalObjects
     {
         private readonly Dictionary<string, object> _values;
@@ -44,7 +7,7 @@ namespace Butterfly.system.objects.main.manager
         /// <summary>
         /// Ключи обьектов созданых в текущем обьекте. 
         /// </summary>
-        private string[] _creatingObjectKey = new string[0];
+        private string[] _creatingObjectKeys = new string[0];
 
         private readonly information.Header _headerInformation;
         private readonly information.State _stateInformation;
@@ -61,37 +24,37 @@ namespace Butterfly.system.objects.main.manager
             _DOMInformation = DOMInformation;
         }
 
-        public RedirectType Add<GlobalObjectType, RedirectType, InputType>(string key, out InputType input, GlobalObjectType value)
-            where GlobalObjectType : InputType, RedirectType
-        {
-            var globalObject = Add(key, value);
+        public RedirectType Add<GlobalObjectType, RedirectType, InputType>
+            (string key, ref InputType input, GlobalObjectType value)
+                where GlobalObjectType : InputType, RedirectType
+                    => Hellper.GetInput<GlobalObjectType, InputType>
+                        (ref input, Add(key, value));
 
-            input = globalObject;
+        public RedirectType Add<GlobalObjectType, RedirectType>
+            (string key, GlobalObjectType value)
+                where GlobalObjectType : RedirectType
+                    => Add(key, value);
 
-            return globalObject;
-        }
-
-        public RedirectType Add<GlobalObjectType, RedirectType>(string key, GlobalObjectType value)
-            where GlobalObjectType : RedirectType
-                => Add(key, value);
-
-        public RedirectType Get<GlobalObjectType, LocalObjectType, InputType, RedirectType> 
+        public RedirectType Get<GlobalObjectType, LocalObjectType, InputType, RedirectType>
             (ref InputType input, string key, LocalObjectType localObject)
                 where LocalObjectType : InputType, RedirectType, IInputConnected
                     where GlobalObjectType : IInformation, IInputConnect
-        {
-            input = localObject;
+                        => Hellper.SetConnected<LocalObjectType, InputType, GlobalObjectType>
+                            (ref input, localObject, Get<GlobalObjectType>(key));
 
-            localObject.SetConnected(Get<GlobalObjectType>(key).GetConnect());
+        public void Get<GlobalObjectType, LocalObjectType>
+            (string key, LocalObjectType localObject)
+                where LocalObjectType : IInputConnected
+                    where GlobalObjectType : IInformation, IInputConnect
+                        => localObject.SetConnected(Get<GlobalObjectType>(key).GetConnect());
 
-            return localObject;
-        }
+        public void Get<GlobalObjectType, InputType>
+            (string key, ref InputType input)
+                where GlobalObjectType : InputType, IInformation
+                    => input = Get<GlobalObjectType>(key);
 
-        public void Get<GlobalObjectType, InputType>(string key, ref InputType input)
-            where GlobalObjectType : InputType, IInformation
-                => input = Get<GlobalObjectType>(key);
-
-        private GlobalObjectType Get<GlobalObjectType>(string key) where GlobalObjectType : IInformation
+        public GlobalObjectType Get<GlobalObjectType>(string key) 
+            where GlobalObjectType : IInformation
         {
             if (_stateInformation.IsContruction)
             {
@@ -120,7 +83,7 @@ namespace Butterfly.system.objects.main.manager
             return default;
         }
 
-        private GlobalObjectType Add<GlobalObjectType>(string key, GlobalObjectType value)
+        public GlobalObjectType Add<GlobalObjectType>(string key, GlobalObjectType value)
         {
             if (_stateInformation.IsContruction)
             {
@@ -138,7 +101,7 @@ namespace Butterfly.system.objects.main.manager
                 {
                     _values.Add(key, value);
 
-                    Hellper.ExpendArray(ref _creatingObjectKey, key);
+                    Hellper.ExpendArray(ref _creatingObjectKeys, key);
 
                     return value;
                 }

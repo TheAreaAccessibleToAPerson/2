@@ -24,35 +24,33 @@ namespace Butterfly.system.objects.main
     /// <typeparam name="R">Тип возращаемых данныx.</typeparam>
     public sealed class ListenEcho<T, R> : Redirect<T, IReturn<R>>, IInput<T, IReturn<R>>, IInputConnect
     {
+        public ListenEcho(IInformation information) : base (information) {}
+
         void IInput<T, IReturn<R>>.To
             (T value1, IReturn<R> value2) => _returnAction(value1, value2);
 
         object IInputConnect.GetConnect() => this;
-
-        public ListenEcho(IInformation information) : base (information) {}
     }
 
-    public sealed class SendEcho<T, R> : Redirect<R>, IInput<T>, IInputConnected, IReturn<R>
+    public sealed class SendEcho<T, R> : Redirect<R>, IInput<T>, IReturn<R>, IInputConnected
     {
-        private IInput<T, IReturn<R>> _inputAction;
+        private IInput<T, IReturn<R>> _connect;
+
+        /// <summary>
+        /// Уникальный индетификационый номер для данного обьекта. 
+        /// </summary>
+        private readonly ulong _uniqueID;
 
         void IInputConnected.SetConnected(object inputConnect)
-        {
-            if (inputConnect is IInput<T, IReturn<R>> inputConnectReduse)
-            {
-                _inputAction = inputConnectReduse;
-            }
-            else 
-                throw new Exception($"Не удалось установить связь объекта {GetType().FullName} c обьектом {inputConnect.GetType().FullName}.");
-        }
+            => Hellper.Connected<IInput<T, IReturn<R>>>(inputConnect, ref _connect, GetType());
 
-        public SendEcho(IInformation information) : base(information){}
+        public SendEcho(IInformation information) : base(information)
+            => _uniqueID = s_uniqueID++;
 
-        void IInput<T>.To(T value) => _inputAction.To(value, this);
+        void IInput<T>.To(T value) => _connect.To(value, this);
 
-        public void To(R value) => input.To(value);
-
-        public ulong GetUnieueID() => s_uniqueID;
+        void IReturn<R>.To(R value) => input.To(value);
+        public ulong GetUnieueID() => _uniqueID;
 
         private static ulong s_uniqueID = 0;
     }
