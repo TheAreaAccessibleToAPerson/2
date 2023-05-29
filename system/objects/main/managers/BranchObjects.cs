@@ -70,7 +70,7 @@ namespace Butterfly.system.objects.main.manager
             }
         }
 
-        public BranchObjectType Add<BranchObjectType>(string key, BranchObjectType branchObject, object localValue = null)
+        public BranchObjectType Add<BranchObjectType>(string key, object localValue = null)
             where BranchObjectType : main.Object, new()
         {
             if (_values == null) _values = new Dictionary<string, Object>();
@@ -88,6 +88,8 @@ namespace Butterfly.system.objects.main.manager
             }
             else
             {
+                BranchObjectType branchObject = new BranchObjectType();
+
                 ((main.description.IDOM)branchObject).BranchDefine(key, _DOMInformation.NodeID, _DOMInformation.NestingNodeNamberInTheSystem + 1,
                     _DOMInformation.NestingObjectNamberInTheNode + 1, _DOMInformation.ParentObjectsID, _DOMInformation.CurrentObject,
                     _DOMInformation.NodeObject, _DOMInformation.NearIndependentNodeObject, _DOMInformation.RootManager, _globalObjects);

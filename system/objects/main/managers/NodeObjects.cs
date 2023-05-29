@@ -49,8 +49,8 @@ namespace Butterfly.system.objects.main.manager
             }
         }
 
-        public NodeObjectType Add<NodeObjectType>(string key, NodeObjectType nodeObject, object localValue = null)
-            where NodeObjectType : main.Object, new()
+        public NodeObjectType Add<NodeObjectType>(string key, object localValue = null)
+            where NodeObjectType : main.Object, main.description.IDOM, new()
         {
             lock (_stateInformation.Locker)
             {
@@ -69,9 +69,9 @@ namespace Butterfly.system.objects.main.manager
                     }
                     else
                     {
-                        if (nodeObject is main.description.IDOM nodeObjectDOM)
-                        {
-                            nodeObjectDOM.NodeDefine(key, _DOMInformation.NestingNodeNamberInTheSystem + 1,
+                            NodeObjectType nodeObject = new NodeObjectType();
+
+                            nodeObject.NodeDefine(key, _DOMInformation.NestingNodeNamberInTheSystem + 1,
                                     _DOMInformation.ParentObjectsID, _DOMInformation.CurrentObject,
                                         _DOMInformation.NearIndependentNodeObject, _DOMInformation.RootManager, _globalObjects);
 
@@ -80,9 +80,8 @@ namespace Butterfly.system.objects.main.manager
                             if (_stateInformation.IsStart)
                             {
                                 _collectedCount++;
-                                _DOMInformation.RootManager.ActionInvoke(nodeObjectDOM.CreatingNode);
+                                _DOMInformation.RootManager.ActionInvoke(nodeObject.CreatingNode);
                             }
-                        }
                     }
 
                 }

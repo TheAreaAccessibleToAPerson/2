@@ -153,12 +153,12 @@ namespace Butterfly.system.objects.main
         {
             if (StateInformation.IsContruction)
             {
-                return _branchObjectsManager.Add<ObjectType>
-                    (key, new ObjectType(), localValues);
+                return _branchObjectsManager.Add<ObjectType> 
+                    (key, localValues);
             }
             else
-                return _nodeObjectsManager.Add<ObjectType>
-                    (key, new ObjectType(), localValues);
+                return _nodeObjectsManager.Add<ObjectType> 
+                    (key, localValues);
         }
 
         #endregion

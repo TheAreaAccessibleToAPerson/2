@@ -1,5 +1,6 @@
 namespace Butterfly.system.objects.main.manager
 {
+
     public sealed class GlobalObjects : Informing, IGlobalObjects
     {
         private readonly Dictionary<string, object> _values;
@@ -53,9 +54,11 @@ namespace Butterfly.system.objects.main.manager
                 where GlobalObjectType : InputType, IInformation
                     => input = Get<GlobalObjectType>(key);
 
-        public GlobalObjectType Get<GlobalObjectType>(string key) 
+        public GlobalObjectType Get<GlobalObjectType>(string key)
             where GlobalObjectType : IInformation
         {
+            Console("GET" + key);
+
             if (_stateInformation.IsContruction)
             {
                 if (_values.TryGetValue(key, out object globalObject))
@@ -85,6 +88,8 @@ namespace Butterfly.system.objects.main.manager
 
         public GlobalObjectType Add<GlobalObjectType>(string key, GlobalObjectType value)
         {
+            Console("ADD" + key);
+
             if (_stateInformation.IsContruction)
             {
                 if (_values.TryGetValue(key, out object globalObject))
